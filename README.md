@@ -1,0 +1,2 @@
+# Spinal_premotor_interneurons_controlling_antagonistic_muscles_are_spatially_intermingled
+ R Marckdown code to generate figures from "Spinal premotor interneurons controlling antagonistic muscles are spatially intermingled"
