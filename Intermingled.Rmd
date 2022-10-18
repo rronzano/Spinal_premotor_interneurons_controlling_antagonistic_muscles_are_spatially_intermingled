@@ -1,9 +1,17 @@
 ---
+title: "Intermingled"
+author: "R Ronzano"
 date: "20/09/2022"
 output:
   html_document: default
   pdf_document: default
 ---
+
+knit: (function(input_file, encoding) {
+    out_dir <- 'File';
+    rmarkdown::render(input_file,
+      encoding=encoding,
+      output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -1155,7 +1163,7 @@ cowplot::plot_grid(Figure_7C, NULL, Figure_7D, NULL, Figure_7E,
 data <- data_all %>% filter(method == "G_Rab_Olig2_RGT" | method == "G_Rab_ChAT_RGT")
 data <- data %>% filter(muscle == lg | muscle == gs | muscle == ta)
 animals <- distinct(data.frame(data$muscle))
-R <- 5000
+R <- 100 # Set here the number of replicates that you want
 N <- c(21, 21)
 lim <- c(-850, 850, -450, 450)
 titer_used <- 0
@@ -1398,7 +1406,7 @@ cowplot::plot_grid(Legend_fig, Figure_10A, ncol=1,nrow = 2, align = "hv", rel_wi
 ## -- 10B -- ##
 data <- data_all %>% filter(method == "AAV-G_WT" | method == "AAV-G-FLEX_ChAT-cre")
 data <- data %>% filter(muscle == gs | muscle == ta)
-R <- 5000
+R <- 100
 N <- c(21, 21)
 lim <- c(-850, 850, -450, 450)
 titer_used <- 0
@@ -1515,7 +1523,7 @@ Box and whisker plots of median values of all the medio-lateral distributions wi
 
 ```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 ,fig.height= 10.4}
 data <- data_all %>% filter(muscle == lg |muscle == gs | muscle == ta)
-R <- 5000
+R <- 100
 N <- c(21, 21)
 lim <- c(-850, 850, -450, 450)
 titer_used <- 1
