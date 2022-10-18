@@ -1,0 +1,2374 @@
+---
+date: "20/09/2022"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{css, echo = FALSE}
+d-article p {
+  text-align: justify;
+}
+```
+
+```{r, echo=FALSE, message=FALSE}
+
+library(openxlsx)
+library(reshape2)
+library(ggplot2)
+library(RColorBrewer)
+library(ggpubr)
+library(knitr)
+library(FSA)
+library(car)
+require(multcomp)
+library(multcompView)
+library(ggbeeswarm)
+library(cowplot)
+library(grid)
+library(mratios)
+library(plotrix)
+library(ggpval)
+library(forcats)
+library(plotly)
+library(tidyr)
+library(dplyr)
+library(plotlyGeoAssets)
+library(tools)
+library(stringr)
+library(png)
+library(magick)
+library(devtools)
+library(ggcorrplot)
+library(scales)
+library(eulerr)
+library(ggvenn)
+library(ggplotify)
+library(gridExtra)
+library(boot)
+source("~/Desktop/last_version_segregation/Analysis/functions_elife_2022.R")
+
+```
+
+```{r, echo=FALSE}
+## file for spinal cord shape ##
+
+setwd("~/Desktop/last_version_segregation/Analysis/data")
+spinal <- read.delim("halfcordt.txt", header = FALSE)
+spinal$V1 <- spinal$V1 * 1700
+spinal$V2 <- spinal$V2 * 900
+spinal_contra <- spinal[order(nrow(spinal):1),] #transform the data to draw the contralateral side
+spinal_contra$V1[sapply(spinal_contra$V1 , is.numeric)] <- spinal_contra$V1 [sapply(spinal_contra$V1, is.numeric)] * -1
+spinal <- rbind(spinal, spinal_contra)
+
+spinal_rc <- read.delim("halfcordld.txt", header = FALSE)
+spinal_rc$V1 <- spinal_rc$V1 * 1700
+spinal_rc <- spinal_rc %>% mutate(V2 = ifelse(V2 > 0, V2 * 1507.5404, V2 * 2421.9371)) #transform the data to fit to the scale from -2500 to 3000
+spinal_rc_contra <- spinal_rc %>% mutate(V1 = V1*-1) #transform the data to draw the contralateral side
+
+spinal_rc_y <- read.delim("halfcordf.txt", header = FALSE)
+spinal_rc_y$V1 <- spinal_rc_y$V1 * 900
+spinal_rc_y <- spinal_rc_y %>% mutate(V2 = ifelse(V2 > 0, V2 * 4491.354, V2 * 4534.224))
+spinal_rc_y_contra <- spinal_rc_y %>% mutate(V1 = V1*-1) #transform the data to draw the contralateral side
+
+## muscle injected ##
+lg <- "lg"
+ta <- "ta"
+mg <- "mg"
+pl <- "pl"
+LG <- "LG"
+TA <- "TA"
+MG <- "MG"
+PL <- "PL"
+N_A <- ""
+gs <- "gs"
+GS <- "GS"
+
+## color used ##
+
+color_range_ext <- colorRampPalette(c("#006eb8", "#000a68"))
+color_range_ext2 <- colorRampPalette(c("#000a68", "#006eb8"))
+color_range_flex <- colorRampPalette(c("#eda911", "#8b4700"))
+color_range_flex2 <- colorRampPalette(c("#8b4700", "#eda911"))
+
+color_lg <- "#006eb8"
+color_gs <- "#006eb8"
+color_ta <- "#eda911"
+color_mg <- "#000a68"
+color_pl <- "#8b4700"
+transpa <- "transparent"
+color_glyt2_off <- "#db6ca9"
+color_glyt2_on <- "#00a875"
+```
+
+```{r, echo=FALSE, warning=FALSE}
+## Data organisation ##
+IN <- "IN"
+MN <- "MN"
+Size <- c(0.5, 2) #Size of dots for INs, MNs, can be set whenever plotting a new distribution
+ymin_d <- 0 #limit x min when ploting only dorsal part
+ymin_vd <- -850 #limit x min when ploting from ventral to dorsal part
+ymax_950 <- 950 #limit x max when ploting to more than 850
+ymax_850 <- 850 #limit x max when ploting exactly to 850
+data_all <- data.frame(x = c(), y = c(), z= c(), animal = c(),  muscle = c(), GlyT2 = c(), lab = c(), titer = c(), method = c(),identity = c())
+# The rest of the chunk built the dataframe with all the data. The rest of the code work with this dataframe. 
+## -- LG high G_Rab_ChAT_RGT -- ##
+setwd("~/Desktop/last_version_segregation/Analysis/data/lg_high_chat")
+titer <- "high"
+method <- "G_Rab_ChAT_RGT"
+data_all <- Data_building(data_all, titer, method) 
+
+## -- TA high G_Rab_ChAT_RGT -- ##
+setwd("~/Desktop/last_version_segregation/Analysis/data/ta_high_chat")
+titer <- "high"
+method <- "G_Rab_ChAT_RGT"
+data_all <- Data_building(data_all, titer, method) 
+
+## -- LG low G_Rab_ChAT_RGT -- ##
+setwd("~/Desktop/last_version_segregation/Analysis/data/lg_low_chat")
+titer <- "low"
+method <- "G_Rab_ChAT_RGT"
+data_all <- Data_building(data_all, titer, method) 
+
+## -- TA low G_Rab_ChAT_RGT -- ##
+setwd("~/Desktop/last_version_segregation/Analysis/data/ta_low_chat")
+titer <- "low"
+method <- "G_Rab_ChAT_RGT"
+data_all <- Data_building(data_all, titer, method) 
+
+## -- MG G_Rab_ChAT_RGT -- ##
+setwd("~/Desktop/last_version_segregation/Analysis/data/mg_chat")
+titer <- "high"
+method <- "G_Rab_ChAT_RGT"
+data_all <- Data_building(data_all, titer, method) 
+
+## -- PL G_Rab_ChAT_RGT -- ##
+setwd("~/Desktop/last_version_segregation/Analysis/data/pl_chat")
+titer <- "high"
+method <- "G_Rab_ChAT_RGT"
+data_all <- Data_building(data_all, titer, method) 
+
+## -- GS G_Rab_Olig2_RGT -- ##
+setwd("~/Desktop/last_version_segregation/Analysis/data/gs_olig2")
+titer <- "high"
+method <- "G_Rab_Olig2_RGT"
+data_all <- Data_building(data_all, titer, method)
+
+## -- TA G_Rab_Olig2_RGT -- ##
+setwd("~/Desktop/last_version_segregation/Analysis/data/ta_olig2")
+titer <- "high"
+method <- "G_Rab_Olig2_RGT"
+data_all <- Data_building(data_all, titer, method)
+
+## -- GS AAV-G_WT -- ##
+setwd("~/Desktop/last_version_segregation/Analysis/data/gs_aav_wt")
+titer <- "high"
+method <- "AAV-G_WT"
+data_all <- Data_building(data_all, titer, method)
+
+## -- TA AAV-G_WT -- ##
+setwd("~/Desktop/last_version_segregation/Analysis/data/ta_aav_wt")
+titer <- "high"
+method <- "AAV-G_WT"
+data_all <- Data_building(data_all, titer, method)
+
+
+## -- GS AAV-G_ChAT -- ##
+setwd("~/Desktop/last_version_segregation/Analysis/data/gs_aav_chat")
+titer <- "high"
+method <- "AAV-G-FLEX_ChAT-cre"
+data_all <- Data_building(data_all, titer, method)
+
+## -- TA AAV-G_ChAT -- ##
+setwd("~/Desktop/last_version_segregation/Analysis/data/ta_aav_chat")
+titer <- "high"
+method <- "AAV-G-FLEX_ChAT-cre"
+data_all <- Data_building(data_all, titer, method)
+
+## -- GS PRV -- ##
+setwd("~/Desktop/last_version_segregation/Analysis/data/gs_prv")
+titer <- "high"
+method <- "PRV_WT"
+data_all <- Data_building(data_all, titer, method)
+
+## -- TA PRV -- ##
+setwd("~/Desktop/last_version_segregation/Analysis/data/ta_prv")
+titer <- "high"
+method <- "PRV_WT"
+data_all <- Data_building(data_all, titer, method)
+
+
+```
+
+# Figure 2
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+
+## -- 2C -- ##
+panel <- "C"
+concatenate = 0
+density <- 0
+kernel <- 6
+bin <- 5
+Size <- c(0.2, 1)
+method_used <- "G_Rab_ChAT_RGT"
+titer_used <- "high"
+Animal <- "170427n2_n_rmb"
+Figure_2Ci <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 1, 
+                                                    1, IN, MN, Size, N_A, N_A, kernel, bin, method_used, titer_used, panel)
+Figure_2Cii <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 1, 
+                                                    1, IN, MN, Size, kernel, bin, method_used, titer_used)
+Figure_2Ciii <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 1, 
+                                                    1, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+cowplot::plot_grid(Figure_2Ci, NULL, Figure_2Cii, NULL, Figure_2Ciii, ncol=5, nrow = 1, align = "hv",
+                                   rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+#NULL are to adapt the space between plots. 
+```
+
+**Figure 2**: Double injections of flexor and extensor muscles shows no segregation of premotor interneurons. C: Projections along the transverse (left), sagittal (middle) and coronal (right) axes throughout the lumbar region of the sample showed in A and B (170427n2, UCL). Dots denote individual premotor interneurons, triangles denote infected motor neurons. Convolved density along each axe are shown to the sides of the raw data (top-bottom and left-right distributions in all panels sum to 1). For each section the data are scaled to the reference points indicated in the methods in order to account for size differences along the segments.
+
+# Figure 3
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left' , fig.width= 10 ,fig.height= 8}
+## -- Figure 3 -- ##
+method_used <- "G_Rab_ChAT_RGT"
+titer_used <- "high"
+Size <- c(0.1, 0)
+kernel <- 6
+bin <- 5
+df <- data_all %>% filter(method == as.character(method_used), titer == as.character(titer_used))
+animals <- distinct(data.frame(df$animal))
+Animal <- as.character(animals$df.animal)
+## -- 3A -- ##
+density <- 0
+concatenate <- 0
+panel <- ""
+Figure_3A <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, lg, N_A, color_range_ext2, transpa, color_lg, transpa, 11, 
+                                       0, IN, N_A, Size, LG, N_A, kernel, bin, method_used, titer_used, panel)
+
+Figure_3A <- ggarrange(NULL, Figure_3A, NULL,
+                       ncol = 3, nrow = 1,  align = "hv",
+                       widths = c(0.2,5,0.2), heights = c(4), common.legend = TRUE, labels = "A", font.label = list(size = 28, color = "black"))
+## -- 3B -- ##
+density <- 0
+concatenate <- 0
+panel <- ""
+Figure_3B <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, ta, N_A, color_range_flex2, transpa, color_ta, transpa, 7, 
+                                       0, IN, N_A, Size, TA, N_A, kernel, bin, method_used, titer_used, panel)
+
+Figure_3B <- ggarrange(NULL, Figure_3B, NULL,
+                       ncol = 3, nrow = 1,  align = "hv",
+                       widths = c(0.2,5,0.2), heights = c(4), common.legend = TRUE, labels = "B", font.label = list(size = 28, color = "black"))
+## -- 3C -- ##
+density <- 1
+concatenate <- 1
+panel <- ""
+Figure_3C <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 11, 
+                                       7, IN, N_A, Size, LG, TA, kernel, bin, method_used, titer_used, panel)
+Figure_3C <- ggarrange(NULL, Figure_3C, NULL,
+                       ncol = 3, nrow = 1,  align = "hv",
+                       widths = c(0.2,5, 0.2), heights = c(4), common.legend = TRUE, labels = "C", font.label = list(size = 28, color = "black"))
+## -- 3D -- ##
+N <- c(21, 21)
+lim <- c(-850, 850, -450, 450)
+panel <- "D"
+numbers <- 0
+Figure_3D <- Corr_HedgesG(data_all, lg, ta, method_used, titer_used, N, lim, panel, color_lg, color_ta, 11, 7, numbers) 
+
+
+cowplot::plot_grid(Figure_3A, Figure_3B, Figure_3C, Figure_3D, ncol=2,nrow = 2, align = "hv", rel_widths = c(5.17,5.17), rel_heights = c(3,3))
+
+
+```
+
+**Figure 3**: Consistent distribution of flexor and extensor premotor interneurons across all individual experiments. A, B: Distribution of premotor interneurons of LG (A) and TA (B) for all the injections. Distributions for each individual experiment are represented with different shades of blue and orange. C: All experiments (single or double ΔG-RabV injections) pooled, showing an overlap of the flexor and extensor related distribution in all quadrants of the spinal cord, with individual dots replaced by contours. For each section the data are scaled to the reference points indicated in the methods in order to account for size differences along the segments. D: Correlation (top right) and absolute value of Hedges' G coefficient (bottom left) across all pairs of experiments, indicating a high degree of consistency and small effect sizes across all experiments, independent of the muscle injected.
+
+```{r, echo=FALSE, warning=FALSE, fig.align='center', fig.width=8 ,fig.height=2}
+## -- 3E -- ##
+Figure_3E_interactive <- boxplot_per_sample_interactive(data_all, method_used, titer_used, lg, ta, color_lg, color_ta, ymin_d, ymax_950)
+
+## -- 3F -- ##
+dat3F <- df_individual(data_all, method_used, titer_used, lg, ta, LG, TA) 
+Figure_3F_interactive <- Boxplot_individual_interactive(dat3F, color_lg, color_ta, ymin_d, ymax_950)
+
+Fig_3EF <- subplot(Figure_3E_interactive, Figure_3F_interactive, widths = c(0.8,0.2), heights = c(1)) 
+Fig_3EF <- Fig_3EF %>% layout(width = 900, height = 450)
+Fig_3EF
+```
+
+Left: Box and whisker plot of the mediolateral position of dorsal ipsilateral premotor interneurons in each experiment. Right: Values of the median for each LG and TA experiment. Pooled distributions split into lumbar segments are shown in Figure 3, figure supplement 1.
+
+# Figure 3 figure supplement 1
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left',, fig.width= 10, fig.height= 12}
+
+## -- Figure 3 supp 1 -- ##
+method_used <- "G_Rab_ChAT_RGT"
+titer_used <- "high"
+Size <- c(0.1, 0)
+kernel <- 6
+concatenate = 0
+density <- 0
+df <- data_all %>% filter(method == as.character(method_used), titer == as.character(titer_used))
+animals <- distinct(data.frame(df$animal))
+Animal <- as.character(animals$df.animal)
+L1 <- data.frame(x = c(), y = c(), z= c(), animal = c(),  muscle = c(), GlyT2 = c(), lab = c(), titer = c(), method = c(),identity = c())
+L2 <- data.frame(x = c(), y = c(), z= c(), animal = c(),  muscle = c(), GlyT2 = c(), lab = c(), titer = c(), method = c(),identity = c())
+L3 <- data.frame(x = c(), y = c(), z= c(), animal = c(),  muscle = c(), GlyT2 = c(), lab = c(), titer = c(), method = c(),identity = c())
+L4 <- data.frame(x = c(), y = c(), z= c(), animal = c(),  muscle = c(), GlyT2 = c(), lab = c(), titer = c(), method = c(),identity = c())
+L5 <- data.frame(x = c(), y = c(), z= c(), animal = c(),  muscle = c(), GlyT2 = c(), lab = c(), titer = c(), method = c(),identity = c())
+L6 <- data.frame(x = c(), y = c(), z= c(), animal = c(),  muscle = c(), GlyT2 = c(), lab = c(), titer = c(), method = c(),identity = c())
+for (i in 1:length(Animal)) {
+  dfl1 <- data_all %>% filter(animal == Animal[i]   &  (z  <= -2400) & (-3200  < z) & identity == IN)
+  L1 <- rbind(L1, dfl1)
+  dfl2 <- data_all %>% filter(animal == Animal[i]   &  (z  <= -1600) & (-2400  < z) & identity == IN)
+  L2 <- rbind(L2, dfl2)
+  dfl3 <- data_all %>% filter(animal == Animal[i]   &  (z  <= -800) & (-1600  < z) & identity == IN)
+  L3 <- rbind(L3, dfl3)
+  dfl4 <- data_all %>% filter(animal == Animal[i]   &  (z  <= 0) & (-800  < z) & identity == IN)
+  L4 <- rbind(L4, dfl4)
+  dfl5 <- data_all %>% filter(animal == Animal[i]   &  (z  <= 800) & (0  < z) & identity == IN)
+  L5 <- rbind(L5, dfl5)
+  dfl6 <- data_all %>% filter(animal == Animal[i]   &  (z  <= 1600) & (800  < z) & identity == IN)
+  L6 <- rbind(L6, dfl6)
+}
+
+
+xmin <- -850
+xmax <- 850
+ymin <- -450
+ymax <- 450
+panel <- c("A", "B", "C", "D", "E", "F")
+segment <- c("L1", "L2", "L3", "L4", "L5", "L6")
+Figure_3supp1A <- complete_graph_xy_density_fig3_figSupp(spinal, L1, lg, ta, color_lg, color_ta, segment[1], kernel, LG, TA, Size, ymin, ymax, xmin, xmax, panel[1])
+Figure_3supp1B <- complete_graph_xy_density_fig3_figSupp(spinal, L2, lg, ta, color_lg, color_ta, segment[2], kernel, LG, TA, Size, ymin, ymax, xmin, xmax, panel[2])
+Figure_3supp1C <- complete_graph_xy_density_fig3_figSupp(spinal, L3, lg, ta, color_lg, color_ta, segment[3], kernel, LG, TA, Size, ymin, ymax, xmin, xmax, panel[3])
+Figure_3supp1D <- complete_graph_xy_density_fig3_figSupp(spinal, L4, lg, ta, color_lg, color_ta, segment[4], kernel, LG, TA, Size, ymin, ymax, xmin, xmax, panel[4])
+Figure_3supp1E <- complete_graph_xy_density_fig3_figSupp(spinal, L5, lg, ta, color_lg, color_ta, segment[5], kernel, LG, TA, Size, ymin, ymax, xmin, xmax, panel[5])
+Figure_3supp1F <- complete_graph_xy_density_fig3_figSupp(spinal, L6, lg, ta, color_lg, color_ta, segment[6], kernel, LG, TA, Size, ymin, ymax, xmin, xmax, panel[6])
+
+cowplot::plot_grid(Figure_3supp1A, Figure_3supp1B, Figure_3supp1C, Figure_3supp1D, Figure_3supp1E, Figure_3supp1F,
+                   ncol=2,nrow = 3, align = "hv", rel_widths = c(5.17,5.17), rel_heights = c(3,3,3))
+
+```
+
+**Figure 3 figure supplement 1**: The distribution of premotor interneurons is similar throughout the lumbar spinal cord: data pooled from 18 experiments (11 LG and 7 TA injections) show that within each lumbar segment, from L1 to L6, the distributions of LG and TA premotor interneurons are overlapping.
+
+# Figure 3 figure supplement 2
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left' , fig.width= 10 ,fig.height= 12}
+
+## -- Figure 3 supp 2 -- ##
+segment_norm <- c(800, 850, 900, 950, 1000, 950)
+setwd("~/Desktop/last_version_segregation/Analysis/data")
+spinal_raw <- read.delim("halfcordt.txt", header = FALSE)
+
+spinal_L1 <- spinal_transform(spinal_raw, segment_norm[1])
+spinal_L2 <- spinal_transform(spinal_raw, segment_norm[2])
+spinal_L3 <- spinal_transform(spinal_raw, segment_norm[3])
+spinal_L4 <- spinal_transform(spinal_raw, segment_norm[4])
+spinal_L5 <- spinal_transform(spinal_raw, segment_norm[5])
+spinal_L6 <- spinal_transform(spinal_raw, segment_norm[6])
+
+setwd("~/Desktop/last_version_segregation/Analysis/data_raw")
+titer <- "high"
+method <- "G_Rab_ChAT_RGT"
+panel <- c("A", "B", "C", "D", "E", "F")
+segment <- c("L1", "L2", "L3", "L4", "L5", "L6")
+xmin <- -1000
+xmax <- 1000
+ymin <- -650
+ymax <- 800
+
+L1_lg <- read.xlsx(xlsxFile = "figS3_2_LG-L1_raw.xlsx", sheet = 1, skipEmptyRows = TRUE, colNames=FALSE)
+L1_ta <- read.xlsx(xlsxFile = "figS3_2_TA-L1_raw.xlsx", sheet = 1, skipEmptyRows = TRUE, colNames=FALSE)
+colnames(L1_lg) <- c("x", "y", "slice")
+colnames(L1_ta) <- c("x", "y", "slice")
+Figure_3supp2A <- complete_graph_xy_density_fig3_figSupp2(spinal_L1, L1_lg, L1_ta, color_lg, color_ta, segment[1], kernel, LG, TA, ymin, ymax, xmin, xmax, panel[1])
+
+L2_lg <- read.xlsx(xlsxFile = "figS3_2_LG-L2_raw.xlsx", sheet = 1, skipEmptyRows = TRUE, colNames=FALSE)
+L2_ta <- read.xlsx(xlsxFile = "figS3_2_TA-L2_raw.xlsx", sheet = 1, skipEmptyRows = TRUE, colNames=FALSE)
+colnames(L2_lg) <- c("x", "y", "slice")
+colnames(L2_ta) <- c("x", "y", "slice")
+Figure_3supp2B <- complete_graph_xy_density_fig3_figSupp2(spinal_L2, L2_lg, L2_ta, color_lg, color_ta, segment[2], kernel, LG, TA, ymin, ymax, xmin, xmax, panel[2])
+
+L3_lg <- read.xlsx(xlsxFile = "figS3_2_LG-L3_raw.xlsx", sheet = 1, skipEmptyRows = TRUE, colNames=FALSE)
+L3_ta <- read.xlsx(xlsxFile = "figS3_2_TA-L3_raw.xlsx", sheet = 1, skipEmptyRows = TRUE, colNames=FALSE)
+colnames(L3_lg) <- c("x", "y", "slice")
+colnames(L3_ta) <- c("x", "y", "slice")
+Figure_3supp2C <- complete_graph_xy_density_fig3_figSupp2(spinal_L3, L3_lg, L3_ta, color_lg, color_ta, segment[3], kernel, LG, TA, ymin, ymax, xmin, xmax, panel[3])
+
+L4_lg <- read.xlsx(xlsxFile = "figS3_2_LG-L4_raw.xlsx", sheet = 1, skipEmptyRows = TRUE, colNames=FALSE)
+L4_ta <- read.xlsx(xlsxFile = "figS3_2_TA-L4_raw.xlsx", sheet = 1, skipEmptyRows = TRUE, colNames=FALSE)
+colnames(L4_lg) <- c("x", "y", "slice")
+colnames(L4_ta) <- c("x", "y", "slice")
+Figure_3supp2D <- complete_graph_xy_density_fig3_figSupp2(spinal_L4, L4_lg, L4_ta, color_lg, color_ta, segment[4], kernel, LG, TA, ymin, ymax, xmin, xmax, panel[4])
+
+L5_lg <- read.xlsx(xlsxFile = "figS3_2_LG-L5_raw.xlsx", sheet = 1, skipEmptyRows = TRUE, colNames=FALSE)
+L5_ta <- read.xlsx(xlsxFile = "figS3_2_TA-L5_raw.xlsx", sheet = 1, skipEmptyRows = TRUE, colNames=FALSE)
+colnames(L5_lg) <- c("x", "y", "slice")
+colnames(L5_ta) <- c("x", "y", "slice")
+Figure_3supp2E <- complete_graph_xy_density_fig3_figSupp2(spinal_L5, L5_lg, L5_ta, color_lg, color_ta, segment[5], kernel, LG, TA, ymin, ymax, xmin, xmax, panel[5])
+
+L6_lg <- read.xlsx(xlsxFile = "figS3_2_LG-L6_raw.xlsx", sheet = 1, skipEmptyRows = TRUE, colNames=FALSE)
+L6_ta <- read.xlsx(xlsxFile = "figS3_2_TA-L6_raw.xlsx", sheet = 1, skipEmptyRows = TRUE, colNames=FALSE)
+colnames(L6_lg) <- c("x", "y", "slice")
+colnames(L6_ta) <- c("x", "y", "slice")
+Figure_3supp2F <- complete_graph_xy_density_fig3_figSupp2(spinal_L6, L6_lg, L6_ta, color_lg, color_ta, segment[6], kernel, LG, TA, ymin, ymax, xmin, xmax, panel[6])
+
+cowplot::plot_grid(Figure_3supp2A, Figure_3supp2B, Figure_3supp2C, Figure_3supp2D, Figure_3supp2E, Figure_3supp2F,
+                   ncol=2,nrow = 3, align = "hv", rel_widths = c(5.17,5.17), rel_heights = c(3,3,3))
+
+```
+
+**Figure 3 figure supplement 2**: Same data as in Figure 3-figure supplement 1 shown before normalization procedures, with idealized spinal cord section scaled to the average size of each segment. Using the raw coordinates, the distribution of LG and TA premotor interneurons are consistently overlapping throughout the lumbar segments.
+
+# Figure 3 figure supplement 3
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left',  fig.width= 12 , fig.height= 4}
+
+## -- coronal -- ##
+panel <- ""
+density <- 1
+concatenate <- 1
+kernel <- 6
+Figure_3supp3 <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 11, 
+                                       7, IN, N_A, Size, LG, TA, kernel, bin, method_used, titer_used, panel)
+
+## -- rostro-caudal ipsi-contra-- ##
+kernel <- 1.5
+Figure_3supp3ii <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 11, 
+                                         7, IN, N_A, Size, kernel, bin, method_used, titer_used)
+
+## -- rostro-caudal ventro-dorsal-- ##
+kernel <- 1.5
+Figure_3supp3iii <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 11, 
+                                          7, IN, N_A, Size, kernel, bin, titer_used, method_used)
+
+cowplot::plot_grid(Figure_3supp3, NULL, Figure_3supp3ii, NULL, Figure_3supp3iii,
+                   ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+```
+
+**Figure 3 figure supplement 3**: distribution of flexor and extensor premotor interneurons pooled across all LG and TA injections shown in the transverse plane (left) and as front (middle) and lateral (right) view along the rostrocaudal axis.
+
+# Figure 4
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 10 ,fig.height= 8 }
+method_used <- "G_Rab_ChAT_RGT"
+titer_used <- "low"
+Size <- c(0.1, 0)
+kernel <- 6
+bin <- 5
+df <- data_all %>% filter(method == as.character(method_used), titer == as.character(titer_used))
+animals <- distinct(data.frame(df$animal))
+Animal <- as.character(animals$df.animal)
+## -- 4A -- ##
+panel <- ""
+density <- 0
+concatenate <- 0
+Figure_4A <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, lg, N_A, color_range_ext2, transpa, color_lg, transpa, 7, 0, IN, N_A, Size, LG, N_A, kernel, bin, method_used, titer_used, panel)
+
+Figure_4A <- ggarrange(NULL, Figure_4A, NULL,ncol = 3, nrow = 1,  align = "hv",
+                widths = c(0.2,5,0.2), heights = c(4), common.legend = TRUE, labels = "A", 
+                font.label = list(size = 28, color = "black"))
+## -- 4B -- ##
+panel <- ""
+density <- 0
+concatenate <- 0
+Figure_4B <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, ta, N_A, color_range_flex2, transpa, color_ta, transpa, 6, 
+                                       0, IN, N_A, Size, TA, N_A, kernel, bin, method_used, titer_used, panel)
+
+Figure_4B <- ggarrange(NULL, Figure_4B, NULL,ncol = 3, nrow = 1,  align = "hv",
+                widths = c(0.2,5,0.2), heights = c(4), common.legend = TRUE, labels = "B", 
+                font.label = list(size = 28, color = "black"))
+## -- 4C -- ##
+panel <- ""
+density <- 1
+concatenate <- 1
+Figure_4C <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 7, 
+                                       6, IN, N_A, Size, LG, TA, kernel, bin, method_used, titer_used, panel)
+Figure_4C <- ggarrange(NULL, Figure_4C, NULL,ncol = 3, nrow = 1,  align = "hv",
+                widths = c(0.2,5,0.2), heights = c(0.2,4, 0.2), common.legend = TRUE, labels = "C", 
+                font.label = list(size = 28, color = "black"))
+## -- 4D -- ##
+panel <- "D"
+N <- c(21, 21)
+lim <- c(-850, 850, -450, 450)
+numbers <- 0
+Figure_4D <- Corr_HedgesG(data_all, lg, ta, method_used, titer_used, N, lim, panel, color_lg, color_ta, 7, 6, numbers)
+
+cowplot::plot_grid(Figure_4A, Figure_4B, Figure_4C, Figure_4D, ncol=2,nrow = 2, align = "hv", rel_widths = c(5.17,5.17), rel_heights = c(3,3))
+
+```
+
+**Figure 4**: Injection with diluted RabV do not reveal any segregation between flexor and extensor premotor interneurons. A and B show the distribution of LG and TA premotor interneurons on the transverse plane for individual experiments, represented with different colour shades. For each section the data are scaled to the reference points indicated in the methods in order to account for size differences along the segments. C: LG and TA distributions overlap and the premotor interneuron distributions are highly correlated across experiments and absolute value of Hedges' G coefficients are small (D).
+
+```{r, echo=FALSE, warning=FALSE, fig.align='center', fig.width=8 ,fig.height=2}
+
+## -- 4E -- ##
+Figure_4E_interactive <- boxplot_per_sample_interactive(data_all, method_used, titer_used, lg, ta, color_lg, color_ta, ymin_d, ymax_950)
+
+## -- 4F -- ##
+dat4F <- df_individual(data_all, method_used, titer_used, lg, ta, LG, TA) 
+Figure_4F_interactive <- Boxplot_individual_interactive(dat4F, color_lg, color_ta, ymin_d, ymax_950)
+
+Fig_4EF_interactive <- subplot(Figure_4E_interactive, Figure_4F_interactive, widths = c(0.8,0.2), heights = c(1)) 
+Fig_4EF_interactive <- Fig_4EF_interactive %>% layout(width = 900, height = 450)
+Fig_4EF_interactive
+```
+
+Left: Box and whisker plot of the mediolateral position of dorsal premotor interneurons in each experiment. Right: Values of the median for each LG and TA experiment.
+
+# Figure 4 figure supplement 1
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+## -- Figure 4 figure supplement 1 -- ##
+method_used <- "G_Rab_ChAT_RGT"
+titer_used <- "low"
+Size <- c(0.1, 0)
+kernel <- 6
+bin <- 5
+df <- data_all %>% filter(method == as.character(method_used), titer == as.character(titer_used))
+animals <- distinct(data.frame(df$animal))
+Animal <- as.character(animals$df.animal)
+panel <- ""
+density <- 1
+concatenate <- 1
+Figure_4supp1i <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 7, 
+                                       6, IN, N_A, Size, LG, TA, kernel, bin, method_used, titer_used, panel)
+
+
+## -- rostro-caudal ipsi-contra-- ##
+kernel <- 1.5
+Figure_4supp1ii <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 7, 
+                                             6, IN, N_A, Size, kernel, bin, method_used, titer_used)
+
+## -- rostro-caudal ventro-dorsal-- ##
+kernel <- 1.5
+Figure_4supp1iii <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 7, 
+                                              6, IN, N_A, Size, kernel, bin, titer_used, method_used)
+
+cowplot::plot_grid(Figure_4supp1i, NULL, Figure_4supp1ii, NULL, Figure_4supp1iii,
+                   ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+
+```
+
+**Figure 4 figure supplement 1**: distribution of flexor and extensor premotor interneurons pooled across all LG and TA injections with diluted RabV shown in the transverse plane (left) and as front (middle) and lateral (right) view along the rostrocaudal axis.
+
+# Figure 4 figure supplement 2
+
+```{r,echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 ,fig.height= 4}
+
+titer_used <- c("high", "low")
+Size <- c(0.1, 0)
+kernel <- 6
+bin <- 5
+method_used <- c("G_Rab_ChAT_RGT")
+Animal <- 0
+
+## -- A -- ##
+panel <- "A"
+name1 <- "LG-high"
+name2 <- "LG-low"
+density <- 1
+concatenate <- 1
+Figure_4supp1_Ai <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, lg, N_A, color_range_ext, color_range_ext2, color_lg, color_mg, 2, 
+                                              0, IN, N_A, Size, name1, name2, kernel, bin, method_used, titer_used, panel)
+
+kernel <- 1.5
+Figure_4supp1_Aii <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, lg, N_A, color_range_ext, color_range_ext2, color_gs, color_mg, 2, 
+                                               0, IN, N_A, Size, kernel, bin, method_used, titer_used)
+
+Figure_4supp1_Aiii <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, lg, N_A, color_range_ext, color_range_ext2, color_gs, color_mg, 2, 
+                                                0, IN, N_A, Size, kernel, bin, titer_used, method_used)
+
+cowplot::plot_grid(Figure_4supp1_Ai, NULL, Figure_4supp1_Aii, NULL, Figure_4supp1_Aiii,
+                   ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 6 ,fig.height= 5}
+
+## -- B -- ##
+N <- c(21, 21)
+lim <- c(-850, 850, -450, 450)
+panel <- "B"
+numbers <- 0
+Figure_4Supp1B <- Corr_HedgesG(data_all, lg, N_A, method_used, titer_used, N, lim, panel, color_lg, color_mg, 11, 7, numbers)
+Figure_4Supp1B
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='center', fig.width=8 ,fig.height=2}
+
+## -- C -- ##  
+Figure_4supp1C_interactive <- boxplot_per_sample_titer_interactive(data_all, method_used, titer_used, lg, color_lg, color_mg, ymin_d, ymax_950)
+## -- D and H -- ## 
+method_used <- "G_Rab_ChAT_RGT"
+titer_used <- "high"
+name1 <- "LG-high"
+name2 <- "TA-high"
+dat4supp1DH <- df_individual(data_all, method_used, titer_used, lg, ta, name1, name2) 
+titer_used <- "low"
+name1 <- "LG-low"
+name2 <- "TA-low"
+df <- df_individual(data_all, method_used, titer_used, lg, ta, name1, name2)
+dat4supp1DH <- rbind(dat4supp1DH, df)
+
+dat4supp1D <- dat4supp1DH  %>% filter(group == "LG-low" | group == "LG-high")
+dat4supp1D$group <- factor(dat4supp1D$group, levels = c("LG-high", "LG-low"))
+Figure_4supp1D_interactive <- Boxplot_individual_interactive(dat4supp1D, color_gs, color_mg, ymin_d, ymax_950)
+
+Figure_4supp1CD_interactive <- subplot(Figure_4supp1C_interactive, Figure_4supp1D_interactive, widths = c(0.7,0.3), heights = c(1)) 
+Figure_4supp1CD_interactive <- Figure_4supp1CD_interactive %>% layout(width = 900, height = 450)
+Figure_4supp1CD_interactive
+
+```
+
+```{r,echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 ,fig.height= 4}
+## -- E -- ##
+kernel <- 6
+bin <- 5
+titer_used <- c("high", "low")
+panel <- "E"
+name1 <- "TA-high"
+name2 <- "TA-low"
+density <- 1
+concatenate <- 1
+Figure_4supp1_Ei <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, color_range_flex2, color_ta, color_pl, 2, 
+                                              0, IN, N_A, Size, name1, name2, kernel, bin, method_used, titer_used, panel)
+
+kernel <- 1.5
+Figure_4supp1_Eii <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, lg, N_A, color_range_flex, color_range_flex, color_ta, color_pl, 2, 
+                                               0, IN, N_A, Size, kernel, bin, method_used, titer_used)
+Figure_4supp1_Eiii <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, color_range_flex2, color_ta, color_pl, 2, 
+                                                0, IN, N_A, Size, kernel, bin, titer_used, method_used)
+
+
+cowplot::plot_grid(Figure_4supp1_Ei, NULL, Figure_4supp1_Eii, NULL, Figure_4supp1_Eiii,
+                   ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 6 ,fig.height= 5}
+
+## -- F -- ##
+N <- c(21, 21)
+lim <- c(-850, 850, -450, 450)
+panel <- "F"
+numbers <- 0
+Figure_4Supp1F <- Corr_HedgesG(data_all, ta, N_A, method_used, titer_used, N, lim, panel, color_ta, color_pl, 7, 6, numbers)
+Figure_4Supp1F
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='center', fig.width=8 ,fig.height=2}
+
+
+## -- G -- ##
+Figure_4supp1G <- boxplot_per_sample_titer(data_all, method_used, titer_used, ta, color_ta, color_pl, ymin_d, ymax_950)
+Figure_4supp1G_interactive <- boxplot_per_sample_titer_interactive(data_all, method_used, titer_used, ta, color_ta, color_pl, ymin_d, ymax_950)
+
+## -- H -- ##
+dat4supp1H <- dat4supp1DH  %>% filter(group == "TA-low" | group == "TA-high")
+dat4supp1H$group <- factor(dat4supp1H$group, levels = c("TA-high", "TA-low"))
+Figure_4supp1H_interactive <- Boxplot_individual_interactive(dat4supp1H, color_ta, color_pl, ymin_d, ymax_950)
+Figure_4supp1H <- Boxplot_individual(dat4supp1D, color_ta, color_pl, ymin_d, ymax_950)
+
+
+Figure_4supp1GH_interactive <- subplot(Figure_4supp1G_interactive, Figure_4supp1H_interactive, widths = c(0.7,0.3), heights = c(1)) 
+Figure_4supp1GH_interactive <- Figure_4supp1GH_interactive %>% layout(width = 900, height = 450)
+Figure_4supp1GH_interactive
+```
+
+**Figure 4 figure supplement 2**: High and low efficiency infections give rise to the same premotor interneurons distributions. Comparison of high and low titre injections are shown in A and E for LG and TA respectively. For each section the data are scaled to the reference points indicated in the methods in order to account for size differences along the segments. Correlations between high and low titre experiments are high and effect sizes are low for both LG and TA muscles (B and F) The distributions are similar across experiments for both muscles (B and E) and the median values of the distributions in the ipsilateral dorsal quadrant are not different for high and low efficiency of infection (C and F).
+
+
+# Figure 4 figure supplement 3
+
+```{r,  warning=FALSE, fig.align='left', fig.width= 5 , fig.height= 5}
+data <- data_all  %>% filter(lab != "Salk")
+animals <- distinct(data.frame(data$animal))
+Animal <- as.character(animals$data.animal)
+data_fig4supp3 <- data.frame(animal = c(), titer = c(), nb_MN = c(), nb_IN = c(), muscle = c())
+for (i in 1:length(Animal)){
+  df2 <- data  %>% filter(animal == Animal[i], identity == "MN")
+  df3 <- data  %>% filter(animal == Animal[i], identity == "IN")
+  muscles <- distinct(data.frame(df3$muscle))
+  Muscle <- as.character(muscles$df3.muscle)
+  for (j in 1:length(Muscle)){
+    df3m <- df3  %>% filter(muscle == Muscle[j])
+    df2m <- df2  %>% filter(muscle == Muscle[j])
+    df3m <- data.frame(lapply(df3m, as.character), stringsAsFactors=FALSE)
+    if (df3m$lab[1] == "UCL"){
+      MNs <- nrow(df2m)*2
+      INs <- nrow(df3m)*2
+      titer_exp <- df3m$titer[1]
+    }
+    if (df3m$lab[1] == "UoG"){
+      MNs <- nrow(df2m)*8
+      INs <- nrow(df3m)*8
+      titer_exp <- df3m$titer[1]
+    }
+    if (df3m$lab[1] == "MDC"){
+      MNs <- nrow(df2m)
+      INs <- nrow(df3m)
+    }
+    v <- c(Animal[i], titer_exp, as.numeric(MNs), as.numeric(INs), Muscle[j])
+    data_fig4supp3 <- rbind(data_fig4supp3, v, stringsAsFactors = FALSE)
+  }
+}
+colnames(data_fig4supp3) <- c("animal", "titer", "nb_MN","nb_IN", "muscle")
+data_fig4supp3$nb_MN <- as.numeric(as.character(data_fig4supp3$nb_MN))
+data_fig4supp3$nb_IN <- as.numeric(as.character(data_fig4supp3$nb_IN))
+data_fig4supp3 <- data_fig4supp3  %>% filter(nb_MN != 0)
+
+#model_log_transformed <- lm(formula = log(nb_MN) ~ log(nb_IN), data = data_fig4supp3) 
+#fit_log <- summary(model_log_transformed)
+#model_linear <- lm(formula = nb_MN ~ nb_IN, data = data_fig4supp3)
+#fit_log
+
+graph_fig4supp3 <- ggplot(data_fig4supp3, aes(x = nb_MN, y = nb_IN)) +
+  #stat_smooth(aes(linetype = "linear"), method = "glm", 
+              #formula = y ~ x, se = TRUE, color = "#145DA0", size = 1, fill = "#145DA0", alpha = 0.2) + #If you want to plot a linear model on non-log transformed data on the same graph
+  geom_point(aes(shape = titer, color = titer), size = 2) +
+  geom_smooth(aes(fill = "#76B947"), linetype = "solid", method.args = list(family = gaussian(link = 'log')), method = "glm", 
+              formula = y ~ log(x), se = TRUE, color = "#76B947", size = 1, alpha = 0.2) +
+  scale_linetype(name = NULL, guide = "legend") +
+  scale_fill_identity(name = "fitted models", guide = "legend", labels = c("log-transformed")) +
+  scale_color_manual(values = c("#979797", "#3B3B3B")) +
+  coord_trans(x="log10", y="log10") +
+  guides(fill = guide_legend(order = 1)) + 
+  scale_y_continuous(breaks = trans_breaks("log10", function(x) 10^x),
+                     labels = trans_format("log10", math_format(10^.x)), expand = c(0.05,0.05)) +
+  scale_x_continuous(expand = c(0.05,0.05), breaks = trans_breaks("log10", function(x) 10^x),
+                     labels = trans_format("log10", math_format(10^.x))) +
+  #stat_regline_equation(label.y = 10^4, aes(label = ..eq.label..)) + #If you want the equation of the model on the figure
+  #stat_regline_equation(label.y = 10^4-2000, aes(label = ..rr.label..)) + #if you want the R^2 on the fig
+  ylab("Input INs") +  
+  xlab("Starter MNs") +
+  theme(axis.text=element_text(size=12, colour = "black")) +
+  theme_classic() +
+  theme(axis.line = element_line(colour = "black", size = 0.5, linetype = "solid")) +
+  theme(axis.text = element_text(colour = 1, size = 12),
+        legend.background = element_blank(), legend.spacing.y = unit(0.15, 'cm'),
+        legend.margin = margin(2, 2, 2, 2),
+        legend.box.background = element_rect(colour = "black"), legend.position = c(0.87, 0.25))
+
+graph_fig4supp3
+```
+
+**Figure 4 figure supplement 3**: the relation between the number of primary infected motor neurons and premotor interneurons follow a power law. Motor neuron and interneuron numbers in each experiment are shown for high (red) and low (black) titre experiments. The fitted line represents a power law.
+
+# Figure 5
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 ,fig.height= 4}
+method_used <- "G_Rab_ChAT_RGT"
+Size <- c(0.1, 0)
+kernel <- 6
+bin <- 5
+titer_used <- "high"
+df <- data_all %>% filter(method == as.character(method_used), titer == as.character(titer_used))
+titer_used <- "low"
+df2 <- data_all %>% filter(method == as.character(method_used), titer == as.character(titer_used))
+df <- rbind(df, df2)
+animals <- distinct(data.frame(df$animal))
+Animal <- as.character(animals$df.animal)
+## -- 5A coronal -- ##
+panel <- "A"
+density <- 1
+concatenate <- 1
+Figure_5Ai <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, lg, mg, color_range_ext, color_range_ext2, color_lg, color_mg, 18, 
+                                        10, IN, N_A, Size, LG, MG, kernel, bin, method_used, titer_used, panel)
+
+## -- 5A rostro-caudal ipsi-lateral -- ##
+kernel <- 1.5
+Figure_5Aii <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, lg, mg, color_range_ext, color_range_ext2, color_lg, color_mg, 18, 
+                                         10, IN, N_A, Size, kernel, bin, method_used, titer_used)
+## -- 5A rostro-caudal ventro-dorsal-- ##
+kernel <- 1.5
+Figure_5Aiii <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, lg, mg, color_range_ext, color_range_ext2, color_lg, color_mg, 18, 
+                                          10, IN, N_A, Size, kernel, bin, titer_used, method_used)
+
+cowplot::plot_grid(Figure_5Ai, NULL, Figure_5Aii, NULL, Figure_5Aiii,
+                   ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 6 ,fig.height= 5}
+## -- 5B -- ##
+panel <- "B"
+N <- c(21, 21)
+lim <- c(-850, 850, -450, 450)
+numbers <- 0
+titer_used <- 0
+Figure_5B <- Corr_HedgesG(data_all, lg, mg, method_used, titer_used, N, lim, panel, color_lg, color_mg, 18, 10, numbers)
+Figure_5B
+```
+
+**Figure 5**: Pairs of flexor or extensor muscles show similar distributions of premotor interneurons. A, comparison of pooled data from extensor muscles LG and MG injections. B: correlation and absolute value of Hedges' G coefficients across all experiments.
+
+```{r, echo=FALSE, warning=FALSE, fig.align='center', fig.width=8 ,fig.height=2}
+## -- 5C -- ##
+titer_used <- 0
+Figure_5C_interactive <- boxplot_per_sample_interactive(data_all, method_used, titer_used, lg, mg, color_lg, color_mg, ymin_d, ymax_950)
+## -- 5D -- ##
+dat5D <- df_individual(data_all, method_used, titer_used, lg, mg, LG, MG) 
+Figure_5D_interactive <- Boxplot_individual_interactive(dat5D, color_lg, color_mg, ymin_d, ymax_950)
+
+Fig_5CD_interactive <- subplot(Figure_5C_interactive, Figure_5D_interactive, widths = c(0.8,0.2), heights = c(1)) 
+Fig_5CD_interactive <- Fig_5CD_interactive %>% layout(width = 900, height = 450)
+Fig_5CD_interactive
+```
+
+Left: box and whisker plots of the mediolateral position of dorsal ipsilateral premotor interneurons for each experiment and distribution of median values (right).
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 ,fig.height= 4}
+
+## -- 5E coronal -- ##
+panel <- "E"
+density <- 1
+concatenate <- 1
+kernel <- 6
+Figure_5Ei <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, ta, pl, color_range_ext, color_range_ext2, color_ta, color_pl, 13, 
+                                        5, IN, N_A, Size, TA, PL, kernel, bin, method_used, titer_used, panel)
+
+## -- 5E rostro-caudal ipsi- contra-- ##
+kernel <- 1.5
+Figure_5Eii <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, ta, pl, color_range_flex, color_range_flex2, color_ta, color_pl, 13, 
+                                         5, IN, N_A, Size, kernel, bin, method_used, titer_used)
+
+## -- 5E rostro-caudal ventro-dorsal-- ##
+kernel <- 1.5
+Figure_5Eiii <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, ta, pl, color_range_flex, color_range_flex2, color_ta, color_pl, 13, 
+                                          5, IN, N_A, Size, kernel, bin, titer_used, method_used)
+
+
+cowplot::plot_grid(Figure_5Ei, NULL, Figure_5Eii, NULL, Figure_5Eiii,
+                   ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 6 ,fig.height= 5}
+## -- 5F -- ##
+N <- c(21, 21)
+lim <- c(-850, 850, -450, 450)
+numbers <- 0
+titer_used <- 0
+panel <- "F"
+Figure_5F <- Corr_HedgesG(data_all, ta, pl, method_used, titer_used, N, lim, panel, color_ta, color_pl, 13, 5, numbers)
+Figure_5F
+```
+
+E: similar plot as A, showing the distribution of premotor interneurons following injections of the flexor muscles TA and PL. Correlations and absolute value of Hedges' G coefficients across each experiment are shown in F.
+
+```{r, echo=FALSE, warning=FALSE, fig.align='center', fig.width=8 ,fig.height=2}
+
+## -- 5G -- ##
+titer_used <- 0
+Figure_5G_interactive <- boxplot_per_sample_interactive(data_all, method_used, titer_used, ta, pl, color_ta, color_pl, ymin_d, ymax_950)
+## -- 5H -- ##
+dat5H <- df_individual(data_all, method_used, titer_used, ta, pl, TA, PL) 
+dat5H$group <- factor(dat5H$group, levels = c("TA", "PL"))
+Figure_5H_interactive <- Boxplot_individual_interactive(dat5H, color_ta, color_pl, ymin_d, ymax_950)
+
+Fig_5GH_interactive <- subplot(Figure_5G_interactive, Figure_5H_interactive, widths = c(0.8,0.2), heights = c(1)) 
+Fig_5GH_interactive <- Fig_5GH_interactive %>% layout(width = 900, height = 450)
+Fig_5GH_interactive
+```
+
+Mediolateral distribution and positions of the median for each experiment, respectively. For each section the data are scaled to the reference points indicated in the methods in order to account for size differences along the segments.
+
+# Figure 6
+
+```{r, echo=FALSE, warning=FALSE}
+## -- Figure 6 -- ##
+data_fig6 <- data_frame(x = c(), y = c(), z= c(), animal = c(),  muscle = c(), GlyT2 = c(), lab = c(), titer = c(), method = c(),identity = c())
+method_used <- "G_Rab_ChAT_RGT"
+## -- exc and inh premotor INs -- ##
+setwd("~/Desktop/last_version_segregation/Analysis/data/lg_exc_chat")
+titer <- "NA"
+method <- "G_Rab_ChAT_RGT"
+data_fig6 <- Data_building(data_fig6, titer, method_used) 
+setwd("~/Desktop/last_version_segregation/Analysis/data/ta_exc_chat")
+data_fig6 <- Data_building(data_fig6, titer, method_used)
+setwd("~/Desktop/last_version_segregation/Analysis/data/lg_inh_chat")
+data_fig6 <- Data_building(data_fig6, titer, method_used)
+setwd("~/Desktop/last_version_segregation/Analysis/data/ta_inh_chat")
+data_fig6 <- Data_building(data_fig6, titer, method_used)
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 ,fig.height= 24}
+
+## -- 6A -- ##
+panel <- ""
+kernel <- 6
+bin <- 5
+nt <- "GlyT2-off"
+Figure_6A <- complete_graph_xy_density_fig6(spinal, data_fig6, lg, ta, color_lg, color_ta, kernel, bin, nt, panel)
+
+## -- 6B -- ##
+transmitter <- "GlyT2-off"
+## -- dorsal -- ##
+hemicord <- "dorsal"
+Figure_6B_dorsal <- boxplot_per_sample_fig6(data_fig6, lg, ta, color_lg, color_ta, ymin_vd, ymax_850, transmitter, hemicord)
+Figure_6B_dorsal <- Figure_6B_dorsal +
+  annotate("text", x = 2.5, y = 780, size = 4, colour = 'black', label = expression("dorsal GlyT2"^"OFF")) +
+  annotate("text", x = 6, y = 780, size = 4, colour = 'black', label = expression("dorsal GlyT2"^"OFF")) 
+## -- ventral -- ##
+hemicord <- "ventral"
+Figure_6B_ventral <- boxplot_per_sample_fig6(data_fig6, lg, ta, color_lg, color_ta, ymin_vd, ymax_850, transmitter, hemicord)
+Figure_6B_ventral <- Figure_6B_ventral +
+  annotate("text", x = 2.5, y = 780, size = 4, colour = 'black', label = expression("ventral GlyT2"^"OFF")) +
+  annotate("text", x = 6, y = 780, size = 4, colour = 'black', label = expression("ventral GlyT2"^"OFF")) 
+
+
+ ## -- 6C -- ##
+## -- dorsal -- ##
+hemicord <- "dorsal"
+dat_6C_dorsal <- df_individual_fig6(data_fig6, method_used, transmitter, hemicord, lg, ta, LG, TA)
+dat_6C_dorsal$group <- factor(dat_6C_dorsal$group, levels = c("LG", "TA"))
+Figure_6C_dorsal <- Boxplot_individual(dat_6C_dorsal, color_lg, color_ta, ymin_vd, ymax_850)
+## -- ventral -- ##
+hemicord <- "ventral"
+dat_6C_ventral <- df_individual_fig6(data_fig6, method_used, transmitter, hemicord, lg, ta, LG, TA)
+dat_6C_ventral$group <- factor(dat_6C_ventral$group, levels = c("LG", "TA"))
+Figure_6C_ventral <- Boxplot_individual(dat_6C_ventral, color_lg, color_ta, ymin_vd, ymax_850)
+
+Figure_6A <- ggarrange(NULL, Figure_6A, NULL,
+                       ncol = 1, nrow = 3,  align = "hv",
+                       widths = c(5), heights = c(1,4,1), common.legend = TRUE, 
+                       labels ="A", font.label = list(size = 28, color = "black"))
+
+Figure_6B <- ggarrange(NULL, Figure_6B_dorsal, NULL, Figure_6B_ventral,
+                       ncol = 2, nrow = 2,  align = "hv",
+                       widths = c(0.8,7), heights = c(2.5,2.5),
+                       common.legend = TRUE, labels = "B", font.label = list(size = 28, 
+                       color = "black")) 
+Figure_6C <- ggarrange(NULL, Figure_6C_dorsal, NULL, NULL, NULL, Figure_6C_ventral,NULL, NULL,
+                       ncol = 2, nrow = 4,  align = "hv",
+                       widths = c(0.7,3), heights = c(2.5,0.23,2.5, 0.23),
+                       common.legend = TRUE, labels = "C", font.label = list(size = 28,
+                       color = "black")) 
+
+## -- 6D -- ##
+panel <- ""
+kernel <- 6
+bin <- 5
+nt <- "GlyT2-on"
+Figure_6D <- complete_graph_xy_density_fig6(spinal, data_fig6, lg, ta, color_lg, color_ta, kernel, bin, nt, panel)
+
+## -- 6E -- ##
+transmitter <- "GlyT2-on"
+## -- dorsal -- ##
+hemicord <- "dorsal"
+Figure_6E_dorsal <- boxplot_per_sample_fig6(data_fig6, lg, ta, color_lg, color_ta, ymin_vd, ymax_850, transmitter, hemicord)
+Figure_6E_dorsal <- Figure_6E_dorsal +
+  annotate("text", x = 2.5, y = 780, size = 4, colour = 'black', label = expression("dorsal GlyT2"^"ON")) +
+  annotate("text", x = 6, y = 780, size = 4, colour = 'black', label = expression("dorsal GlyT2"^"ON")) 
+
+## -- ventral -- ##
+hemicord <- "ventral"
+Figure_6E_ventral <- boxplot_per_sample_fig6(data_fig6, lg, ta, color_lg, color_ta, ymin_vd, ymax_850, transmitter, hemicord)
+Figure_6E_ventral <- Figure_6E_ventral +
+  annotate("text", x = 2.5, y = 780, size = 4, colour = 'black', label = expression("ventral GlyT2"^"ON")) +
+  annotate("text", x = 6, y = 780, size = 4, colour = 'black', label = expression("ventral GlyT2"^"ON")) 
+
+## -- 6F -- ##
+## -- dorsal -- ##
+hemicord <- "dorsal"
+dat_6F_dorsal <- df_individual_fig6(data_fig6, method_used, transmitter, hemicord, lg, ta, LG, TA)
+dat_6F_dorsal$group <- factor(dat_6F_dorsal$group, levels = c("LG", "TA"))
+Figure_6F_dorsal_interactive <- Boxplot_individual_interactive(dat_6F_dorsal, color_lg, color_ta, ymin_vd, ymax_850)
+Figure_6F_dorsal <- Boxplot_individual(dat_6F_dorsal, color_lg, color_ta, ymin_vd, ymax_850)
+## -- ventral -- ##
+hemicord <- "ventral"
+dat_6F_ventral <- df_individual_fig6(data_fig6, method_used, transmitter, hemicord, lg, ta, LG, TA)
+dat_6F_ventral$group <- factor(dat_6F_ventral$group, levels = c("LG", "TA"))
+Figure_6F_ventral_interactive <- Boxplot_individual_interactive(dat_6F_ventral, color_lg, color_ta, ymin_vd, ymax_850)
+Figure_6F_ventral <- Boxplot_individual(dat_6F_ventral, color_lg, color_ta, ymin_vd, ymax_850)
+
+
+Figure_6D <- ggarrange(NULL, Figure_6D, NULL,
+                       ncol = 1, nrow = 3,  align = "hv",
+                       widths = c(5), heights = c(1,4,1), common.legend = TRUE, labels = "D", font.label = list(size = 28, color = "black"))
+Figure_6E <- ggarrange(NULL, Figure_6E_dorsal, NULL, Figure_6E_ventral,
+                       ncol = 2, nrow = 2,  align = "hv",
+                       widths = c(0.8,7), heights = c(2.5,2.5),
+                       common.legend = TRUE, labels = "E", font.label = list(size = 28, color = "black")) 
+Figure_6F <- ggarrange(NULL, Figure_6F_dorsal, NULL, NULL, NULL, Figure_6F_ventral,NULL, NULL,
+                       ncol = 2, nrow = 4,  align = "hv",
+                       widths = c(0.5,3), heights = c(2.5,0.23,2.5, 0.23),
+                       common.legend = TRUE, labels = "F", font.label = list(size = 28, color = "black")) 
+
+
+## -- 6G -- ##
+panel <- ""
+kernel <- 6
+bin <- 5
+nt <- "GlyT2-on"
+nt2 <- "GlyT2-off"
+Figure_6G <- complete_graph_xy_density_fig6(spinal, data_fig6, nt, nt2, color_glyt2_on, color_glyt2_off, kernel, bin, lg, panel)
+
+
+## -- 6H -- ##
+## -- dorsal -- ##
+hemicord <- "dorsal"
+Figure_6H_dorsal <- boxplot_per_sample_fig6_glyT2(data_fig6, lg, color_glyt2_on, color_glyt2_off, ymin_vd, ymax_850, hemicord)
+Figure_6H_dorsal <- Figure_6H_dorsal +
+  annotate("text", x = 2.5, y = 780, size = 4, colour = 'black', label = expression("dorsal GlyT2"^"ON")) +
+  annotate("text", x = 6.5, y = 780, size = 4, colour = 'black', label = expression("dorsal GlyT2"^"OFF")) 
+
+## -- ventral -- ##
+hemicord <- "ventral"
+Figure_6H_ventral <- boxplot_per_sample_fig6_glyT2(data_fig6, lg, color_glyt2_on, color_glyt2_off, ymin_vd, ymax_850, hemicord)
+Figure_6H_ventral <- Figure_6H_ventral +
+  annotate("text", x = 2.5, y = 780, size = 4, colour = 'black', label = expression("ventral GlyT2"^"ON")) +
+  annotate("text", x = 6.5, y = 780, size = 4, colour = 'black', label = expression("ventral GlyT2"^"OFF")) 
+
+## -- 6I -- ##
+## -- dorsal -- ##
+dat_6I_dorsal <- Selection_glyT2(dat_6C_dorsal, dat_6F_dorsal, LG)
+dat_6I_dorsal$group <- factor(dat_6I_dorsal$group, levels = c("GlyT2<sup>ON</sup>", "GlyT2<sup>OFF</sup>"))
+Figure_6I_dorsal <- Boxplot_individual(dat_6I_dorsal, color_glyt2_on, color_glyt2_off, ymin_vd, ymax_850)
+Figure_6I_dorsal <- Figure_6I_dorsal + scale_x_discrete(labels=c(expression("GlyT2"^"ON"),expression("GlyT2"^"OFF")))  + theme(axis.text.x = element_text(angle=45, size = 9, hjust = 1))
+
+## -- ventral -- ##
+dat_6I_ventral <- Selection_glyT2(dat_6C_ventral, dat_6F_ventral, LG)
+dat_6I_ventral$group <- factor(dat_6I_ventral$group, levels = c("GlyT2<sup>ON</sup>", "GlyT2<sup>OFF</sup>"))
+Figure_6I_ventral <- Boxplot_individual(dat_6I_ventral, color_glyt2_on, color_glyt2_off, ymin_vd, ymax_850)
+Figure_6I_ventral <- Figure_6I_ventral + scale_x_discrete(labels=c(expression("GlyT2"^"ON"),expression("GlyT2"^"OFF")))  + theme(axis.text.x = element_text(angle=45, size = 9, hjust = 1))
+
+Figure_6G <- ggarrange(NULL, Figure_6G, NULL,
+                       ncol = 1, nrow = 3,  align = "hv",
+                       widths = c(5), heights = c(1,4,1), common.legend = TRUE, labels = "G", font.label = list(size = 28, color = "black"))
+Figure_6H <- ggarrange(NULL, Figure_6H_dorsal, NULL, Figure_6H_ventral,
+                       ncol = 2, nrow = 2,  align = "hv",
+                       widths = c(0.8,7), heights = c(2.5,2.5),
+                       common.legend = TRUE, labels = "H", font.label = list(size = 28, color = "black")) 
+Figure_6I <- ggarrange(NULL, Figure_6I_dorsal, NULL, Figure_6I_ventral,
+                       ncol = 2, nrow = 2,  align = "hv",
+                       widths = c(0.5,3), heights = c(2.5,2.5),
+                       common.legend = TRUE, labels = "I", font.label = list(size = 28, color = "black"))
+
+## -- 6J -- ##
+panel <- ""
+kernel <- 6
+bin <- 5
+nt <- "GlyT2-on"
+nt2 <- "GlyT2-off"
+Figure_6J <- complete_graph_xy_density_fig6(spinal, data_fig6, nt, nt2, color_glyt2_on, color_glyt2_off, kernel, bin, ta, panel)
+
+
+## -- 6K -- ##
+## -- dorsal -- ##
+hemicord <- "dorsal"
+Figure_6K_dorsal <- boxplot_per_sample_fig6_glyT2(data_fig6, ta, color_glyt2_on, color_glyt2_off, ymin_vd, ymax_850, hemicord)
+Figure_6K_dorsal <- Figure_6K_dorsal +
+  annotate("text", x = 2, y = 780, size = 4, colour = 'black', label = expression("dorsal GlyT2"^"ON")) +
+  annotate("text", x = 5, y = 780, size = 4, colour = 'black', label = expression("dorsal GlyT2"^"OFF")) 
+
+## -- ventral -- ##
+hemicord <- "ventral"
+Figure_6K_ventral <- boxplot_per_sample_fig6_glyT2(data_fig6, ta, color_glyt2_on, color_glyt2_off, ymin_vd, ymax_850, hemicord)
+Figure_6K_ventral <- Figure_6K_ventral +
+  annotate("text", x = 2, y = 780, size = 4, colour = 'black', label = expression("ventral GlyT2"^"ON")) +
+  annotate("text", x = 5, y = 780, size = 4, colour = 'black', label = expression("ventral GlyT2"^"OFF")) 
+
+## -- Figure 6L -- ##
+## -- dorsal -- ##
+dat_6L_dorsal <- Selection_glyT2(dat_6C_dorsal, dat_6F_dorsal, TA)
+dat_6L_dorsal$group <- factor(dat_6L_dorsal$group, levels = c("GlyT2<sup>ON</sup>", "GlyT2<sup>OFF</sup>"))
+Figure_6L_dorsal <- Boxplot_individual(dat_6L_dorsal, color_glyt2_on, color_glyt2_off, ymin_vd, ymax_850)
+Figure_6L_dorsal <- Figure_6L_dorsal + scale_x_discrete(labels=c(expression("GlyT2"^"ON"),expression("GlyT2"^"OFF")))  + theme(axis.text.x = element_text(angle=45, size = 9, hjust = 1))
+
+## -- ventral -- ##
+dat_6L_ventral <- Selection_glyT2(dat_6C_ventral, dat_6F_ventral, TA)
+dat_6L_ventral$group <- factor(dat_6L_ventral$group, levels = c("GlyT2<sup>ON</sup>", "GlyT2<sup>OFF</sup>"))
+Figure_6L_ventral <- Boxplot_individual(dat_6L_ventral, color_glyt2_on, color_glyt2_off, ymin_vd, ymax_850)
+Figure_6L_ventral <- Figure_6L_ventral + scale_x_discrete(labels=c(expression("GlyT2"^"ON"),expression("GlyT2"^"OFF"))) + theme(axis.text.x = element_text(angle=45, size = 9, hjust = 1))
+
+Figure_6J <- ggarrange(NULL, Figure_6J, NULL,
+                       ncol = 1, nrow = 3,  align = "hv",
+                       widths = c(5), heights = c(1,4,1), common.legend = TRUE, labels = "J", font.label = list(size = 28, color = "black"))
+Figure_6K <- ggarrange(NULL, Figure_6K_dorsal, NULL, Figure_6K_ventral,
+                       ncol = 2, nrow = 2,  align = "hv",
+                       widths = c(0.8,7), heights = c(2.5,2.5),
+                       common.legend = TRUE, labels = "K", font.label = list(size = 28, color = "black")) 
+Figure_6L <- ggarrange(NULL, Figure_6L_dorsal, NULL, Figure_6L_ventral,
+                       ncol = 2, nrow = 2,  align = "hv",
+                       widths = c(0.5,3), heights = c(2.5,2.5),
+                       common.legend = TRUE, labels = "L", font.label = list(size = 28, color = "black"))
+
+cowplot::plot_grid(Figure_6A, NULL, Figure_6B, Figure_6C,Figure_6D, NULL, Figure_6E, Figure_6F,
+                   Figure_6G, NULL, Figure_6H, Figure_6I,Figure_6J, NULL, Figure_6K, Figure_6L,
+                   nrow=4,ncol=4, rel_widths = c(5.25,-0.4,6,2.5),rel_heights = c(5, 5, 5, 5),
+                   align = 'hv')
+                   
+```
+
+**Figure 6**: GlyT2^on^ and GlyT2^off^ premotor interneurons are distributed similarly for TA and LG. A, B: Distribution of GlyT2^off^ (A) and GlyT2^on^ (D) premotor interneurons following LG and TA injections pooled from 4 LG and 3 TA experiments in *GlyT2-EGFP::ChAT-Cre* mice crossed with RFGT mice, indicating that neither class of premotor interneurons is segregated across muscles. Boxplots and violin plots (B for GlyT2^off^ and E for GlyT2^on^) show uniformity of distribution across experiments in both the dorsal (top) and ventral (bottom) halves of the cord. C (GlyT2^off^) and F (GlyT2^on^) show boxplots and individual values for the medians of the mediolateral distributions restricted to dorsal (top) or ventral (bottom) part of the cord. Ventral premotor GlyT2^off^ and GlyT2^on^ interneurons are differentially distributed. Comparison of excitatory and inhibitory premotor interneurons in LG (G) and TA (J) muscles are similar in the dorsal cord, but differ in the ventral cord, where most ipsilateral premotor interneurons are GlyT2^on^, and the majority of contralateral premotor interneurons are GlyT2^off^. Boxplots and violin plots of individual experiments are shown in H for LG and K for TA, highlighting the mediolateral differences in the ventral cord. The medians of the ventral and dorsal distributions are shown in I for LG and L for TA. For each section the data are scaled to the reference points indicated in the methods in order to account for size differences along the segments.
+
+# Figure 7
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 15 , fig.height= 4}
+method_used <- "G_Rab_Olig2_RGT"
+Size <- c(0.1, 0)
+kernel <- 6
+bin <- 5
+titer_used <- "high"
+df <- data_all %>% filter(method == as.character(method_used), titer == as.character(titer_used))
+animals <- distinct(data.frame(df$animal))
+Animal <- as.character(animals$df.animal)
+
+## -- 7C -- ##
+panel <- "C"
+density <- 0
+concatenate <- 0
+Figure_7C <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, gs, N_A, color_range_ext2, transpa, color_gs, transpa, 4, 
+                                       0, IN, N_A, Size, GS, N_A, kernel, bin, method_used, titer_used, panel)
+
+## -- 7E -- ##
+panel <- "E"
+density <- 1
+concatenate <- 1
+Figure_7E <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 4, 
+                                       3, IN, N_A, Size, LG, TA, kernel, bin, method_used, titer_used, panel)
+## -- 7D -- ##
+panel <- "D"
+density <- 0
+concatenate <- 0
+df <- data_all %>% filter(method == as.character(method_used), titer == as.character(titer_used), muscle == "ta")
+animals <- distinct(data.frame(df$animal))
+Animal <- as.character(animals$df.animal)
+Figure_7D <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, ta, N_A, color_range_flex2, transpa, color_ta, transpa, 3, 
+                                       0, IN, N_A, Size, TA, N_A, kernel, bin, method_used, titer_used, panel)
+
+cowplot::plot_grid(Figure_7C, NULL, Figure_7D, NULL, Figure_7E,
+                   ncol=5,nrow = 1, align = "hv", rel_widths = c(5.17,-0.15, 5.17,-0.15,5.17), rel_heights = 3)
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 6 ,fig.height= 5}
+
+## -- 7F -- ##
+data <- data_all %>% filter(method == "G_Rab_Olig2_RGT" | method == "G_Rab_ChAT_RGT")
+data <- data %>% filter(muscle == lg | muscle == gs | muscle == ta)
+animals <- distinct(data.frame(data$muscle))
+R <- 5000
+N <- c(21, 21)
+lim <- c(-850, 850, -450, 450)
+titer_used <- 0
+
+df_Hedges <- get_Hedges_boot(titer_used, data, R)
+df_corr <- get_Corr_concatenate(data, titer_used, N, lim)
+if (identical(df_corr$method_1, df_Hedges$method_1) & identical(df_corr$method_1,df_Hedges$method_1)) {
+  df_corr_Hedges <- cbind(df_corr, df_Hedges$HedgesGcoef, stringsAsFactors = FALSE)
+} else { print("error in correlation or Hedges G oefficient order")}
+colnames(df_corr_Hedges) <- c("sample_1", "sample_2", "CorrCoef", "HedgesG") # Function "organise_Corr_hedges" is built to use dataframe with these exact colonnes' name. 
+remove <- c("_RGT","G_Rab_")
+df_corr_Hedges$sample_1 <- str_remove_all(df_corr_Hedges$sample_1, paste(remove, collapse = "|"))
+df_corr_Hedges$sample_2 <- str_remove_all(df_corr_Hedges$sample_2, paste(remove, collapse = "|"))
+df_corr_Hedges <- organise_Corr_hedges(df_corr_Hedges)
+numbers <- 1
+color1 <- c(color_lg, color_ta)
+color2 <- c(color_gs, color_ta)
+panel <- "F"
+Figure_7F <- Corr_HedgesG_methods(df_corr_Hedges, panel, color1, color2, 2, 2, numbers)
+Figure_7F
+
+```
+
+**Figure 7**: The distribution of flexor and extensor premotor INs is similar in *Olig2::Cre; RGT*. C - E: Overlay of individual GS (C) and TA (D) experiments and pooled experiments (E). For each section the data are scaled to the reference points indicated in the methods in order to account for size differences along the segments. F: Correlation coefficients and absolute value of hierarchical bootstrapped Hedges' G effect sizes between injections of different muscles and using a different driver for Cre expression.
+
+```{r, echo=FALSE, warning=FALSE, fig.align='center', fig.width=5 ,fig.height=2}
+## -- 7G -- ##
+colors_vector <- c("#006eb8", "#006eb8", "#eda911", "#eda911")
+titer_used <- 0
+method_used <- "G_Rab_Olig2_RGT"
+dat7G <- df_individual(data_all, method_used, titer_used, gs, ta , GS, TA) 
+dat7G <- dat7G %>% mutate(group = ifelse(group == "GS", "gs_Olig2::cre", "ta_Olig2::cre"))
+method_used <- "G_Rab_ChAT_RGT"
+df <- df_individual(data_all, method_used, titer_used, lg, ta , LG, TA)
+df <- df %>% mutate(group = ifelse(group == "LG", "lg_ChAT::cre", "ta_ChAT::cre"))
+dat7G <- rbind(dat7G, df)
+dat7G$group <- factor(dat7G$group, levels = c("lg_ChAT::cre","gs_Olig2::cre","ta_ChAT::cre", "ta_Olig2::cre"))
+Figure_7G_interactive <- Boxplot_methods_interactive(dat7G, colors_vector, ymin_d, ymax_950)
+
+Fig_7G_interactive <- subplot(Figure_7G_interactive, widths = c(1), heights = c(1)) 
+Fig_7G_interactive <- Fig_7G_interactive %>% layout(width = 500, height = 450)
+Fig_7G_interactive
+```
+
+Box and whisker plots of median values of all the medio-lateral distributions.
+
+# Figure 7 figure supplement 1
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+method_used <- "G_Rab_Olig2_RGT"
+Size <- c(0.1, 0)
+kernel <- 6
+bin <- 5
+titer_used <- "high"
+df <- data_all %>% filter(method == as.character(method_used), titer == as.character(titer_used))
+animals <- distinct(data.frame(df$animal))
+Animal <- as.character(animals$df.animal)
+panel <- ""
+density <- 1
+concatenate <- 1
+Figure_7supp1i <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 4, 
+                                       3, IN, N_A, Size, GS, TA, kernel, bin, method_used, titer_used, panel)
+
+## -- rostro-caudal ipsi-contra-- ##
+kernel <- 1.5
+Figure_7supp1ii <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 4,
+                  3, IN, N_A, Size, kernel, bin, method_used, titer_used)
+
+## -- rostro-caudal ventro-dorsal-- ##
+kernel <- 1.5
+Figure_7supp1iii <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 4, 3, IN, N_A, Size, kernel, bin, titer_used, method_used)
+
+cowplot::plot_grid(Figure_7supp1i, NULL, Figure_7supp1ii, NULL, Figure_7supp1iii,
+                   ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+```
+
+**Figure 7 figure supplement 1**: distribution of flexor and extensor premotor interneurons pooled across GS and TA injections performed in *Olig2::Cre; RFGT* mice. Distributions are shown in the transverse plane (left) and as front (middle) and lateral (right) view along the rostrocaudal axis.
+
+# Figure 8
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', , fig.width= 12 , fig.height= 4}
+## -- Figure 8 -- ##
+method_used <- "AAV-G_WT"
+Size <- c(0.1, 0)
+kernel <- 6
+bin <- 5
+titer_used <- "high"
+df <- data_all %>% filter(method == as.character(method_used), titer == as.character(titer_used))
+animals <- distinct(data.frame(df$animal))
+Animal <- as.character(animals$df.animal)
+
+## -- 8C coronal -- ##
+panel <- "C"
+density <- 1
+concatenate <- 1
+Figure_8Ci <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 4, 
+                                        2, IN, N_A, Size, GS, TA, kernel, bin, method_used, titer_used, panel)
+
+## -- 8C rostro-caudal ipsi-contra-- ##
+kernel <- 1.5
+Figure_8Cii <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 4, 
+                                         2, IN, N_A, Size, kernel, bin, method_used, titer_used)
+
+## -- 8C rostro-caudal ventro-dorsal-- ##
+kernel <- 1.5
+Figure_8Ciii <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 4, 
+                                          2, IN, N_A, Size, kernel, bin, titer_used, method_used)
+
+cowplot::plot_grid(Figure_8Ci, NULL, Figure_8Cii, NULL, Figure_8Ciii,
+                   ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 6 ,fig.height= 5}
+
+## -- 8D -- ##
+N <- c(21, 21)
+lim <- c(-850, 850, -450, 450)
+numbers <- 1
+panel <- "D"
+Figure_8D <- Corr_HedgesG(data_all, gs, ta, method_used, titer_used, N, lim, panel, color_gs, color_ta, 4, 2, numbers)
+Figure_8D
+```
+
+**Figure 8**: Injection of AAV-G and RabV into GS and TA muscles does not reveal segregation of premotor interneurons. (C). For each section the data are scaled to the reference points indicated in the methods in order to account for size differences along the segments. Individual experiments are highly correlated and have low absolute value of Hedges' G effect sizes (D).
+
+```{r, echo=FALSE, warning=FALSE, fig.align='center', fig.width=8 ,fig.height=2}
+
+## -- 8E -- ##
+Figure_8E_interactive <- boxplot_per_sample_interactive(data_all, method_used, titer_used, gs, ta, color_gs, color_ta, ymin_d, ymax_950)
+## -- 8F -- ##
+dat8F <- df_individual(data_all, method_used, titer_used, gs, ta, GS, TA) 
+Figure_8F_interactive <- Boxplot_individual_interactive(dat8F, color_gs, color_ta, ymin_d, ymax_950)
+
+Fig_8EF_interactive <- subplot(Figure_8E_interactive, Figure_8F_interactive, widths = c(0.8,0.2), heights = c(1)) 
+Fig_8EF_interactive <- Fig_8EF_interactive %>% layout(width = 900, height = 450)
+Fig_8EF_interactive
+
+```
+
+Box and whisker plots of median values of all the medio-lateral distributions.
+
+# Figure 9
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', , fig.width= 12 , fig.height= 4}
+
+## -- Figure 9 -- ##
+method_used <- "AAV-G-FLEX_ChAT-cre"
+Size <- c(0.1, 0)
+kernel <- 6
+bin <- 5
+titer_used <- "high"
+df <- data_all %>% filter(method == as.character(method_used), titer == as.character(titer_used))
+animals <- distinct(data.frame(df$animal))
+Animal <- as.character(animals$df.animal)
+
+## -- 9C coronal -- ##
+panel <- "C"
+density <- 1
+concatenate <- 1
+Figure_9Ci <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 4, 
+                                        2, IN, N_A, Size, GS, TA, kernel, bin, method_used, titer_used, panel)
+
+## -- 9C rostro-caudal ipsi-contra-- ##
+kernel <- 1.5
+Figure_9Cii <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 4, 
+                                         2, IN, N_A, Size, kernel, bin, method_used, titer_used)
+
+## -- 9C rostro-caudal ventro-dorsal-- ##
+kernel <- 1.5
+Figure_9Ciii <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 4, 
+                                          2, IN, N_A, Size, kernel, bin, titer_used, method_used)
+
+cowplot::plot_grid(Figure_9Ci, NULL, Figure_9Cii, NULL, Figure_9Ciii,
+                   ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 6 ,fig.height= 5}
+
+## -- 9D -- ##
+N <- c(21, 21)
+lim <- c(-850, 850, -450, 450)
+numbers <- 1
+panel <- "D"
+Figure_9D <- Corr_HedgesG(data_all, gs, ta, method_used, titer_used, N, lim, panel, color_gs, color_ta, 4, 3, numbers)
+Figure_9D
+
+```
+
+**Figure 9**: Injection of AAV-FLEX-G in ChAT::Cre mice gives rise to overlapping distributions of flexor and extensor related premotor interneurons. The pooled distributions of flexor and extensor related infected neurons are similar on the transverse and longitudinal planes (C). For each section the data are scaled to the reference points indicated in the methods in order to account for size differences along the segments. There is strong correlation and low effect sizes across individual experiments (D).
+
+```{r, echo=FALSE, warning=FALSE, fig.align='center', fig.width=8 ,fig.height=2}
+## -- 9E -- ##
+Figure_9E_interactive <- boxplot_per_sample_interactive(data_all, method_used, titer_used, gs, ta, color_gs, color_ta, ymin_d, ymax_950)
+## -- 9F -- ##
+dat9F <- df_individual(data_all, method_used, titer_used, gs, ta, GS, TA) 
+Figure_9F_interactive <- Boxplot_individual_interactive(dat9F, color_gs, color_ta, ymin_d, ymax_950)
+
+Fig_9EF_interactive <- subplot(Figure_9E_interactive, Figure_9F_interactive, widths = c(0.8,0.2), heights = c(1)) 
+Fig_9EF_interactive <- Fig_9EF_interactive %>% layout(width = 900, height = 450)
+Fig_9EF_interactive
+```
+
+Box and whisker plots of median values of all the medio-lateral distributions with identical values for flexor and extensor injections.
+
+# Figure 10
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', , fig.width= 12 , fig.height= 6}
+
+method_used <- c("AAV-G_WT", "AAV-G-FLEX_ChAT-cre")
+Size <- c(0.1, 0)
+kernel <- 6
+bin <- 5
+titer_used <- "high"
+Animal <- 0
+
+
+## -- 10Ai -- ##
+panel <- ""
+density <- 1
+concatenate <- 1
+Figure_10Ai <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, color_range_ext2, color_gs, color_mg, 2, 
+                                         0, IN, N_A, Size, GS, N_A, kernel, bin, method_used, titer_used, panel)
+
+## -- 10Aii -- ##
+panel <- ""
+density <- 1
+concatenate <- 1
+Figure_10Aii <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, color_range_flex2, color_ta, color_pl, 2, 
+                                          0, IN, N_A, Size, TA, N_A, kernel, bin, method_used, titer_used, panel)
+
+
+Legend_fig <- cowplot::ggdraw() + cowplot::draw_image("~/Desktop/last_version_segregation/Analysis/data/Legend_Fig10A.png", scale = 1)
+Figure_10A <- cowplot::plot_grid(Figure_10Ai,NULL, Figure_10Aii, ncol=3,nrow = 1, align = "hv", rel_widths = c(4,2,4), rel_heights = 3)
+cowplot::plot_grid(Legend_fig, Figure_10A, ncol=1,nrow = 2, align = "hv", rel_widths = c(10), rel_heights = c(2,4))
+
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 6 ,fig.height= 4.8}
+## -- 10B -- ##
+data <- data_all %>% filter(method == "AAV-G_WT" | method == "AAV-G-FLEX_ChAT-cre")
+data <- data %>% filter(muscle == gs | muscle == ta)
+R <- 5000
+N <- c(21, 21)
+lim <- c(-850, 850, -450, 450)
+titer_used <- 0
+
+df_Hedges <- get_Hedges_boot(titer_used, data, R)
+df_corr <- get_Corr_concatenate(data, titer_used, N, lim)
+if (identical(df_corr$method_1, df_Hedges$method_1) & identical(df_corr$method_1,df_Hedges$method_1)) {
+  df_corr_Hedges <- cbind(df_corr, df_Hedges$HedgesGcoef, stringsAsFactors = FALSE)
+} else { print("error in correlation or Hedges G oefficient order")}
+colnames(df_corr_Hedges) <- c("sample_1", "sample_2", "CorrCoef", "HedgesG") # Function "organise_Corr_hedges" is built to use dataframe with these exact colonnes' name. 
+remove <- c("-cre")
+df_corr_Hedges$sample_1 <- str_remove_all(df_corr_Hedges$sample_1, paste(remove, collapse = "|"))
+df_corr_Hedges$sample_2 <- str_remove_all(df_corr_Hedges$sample_2, paste(remove, collapse = "|"))
+df_corr_Hedges <- organise_Corr_hedges(df_corr_Hedges)
+numbers <- 1
+color1 <- c(color_mg, color_pl)
+color2 <- c(color_gs, color_ta)
+panel <- "B"
+Figure_10B <- Corr_HedgesG_methods(df_corr_Hedges, panel, color1, color2, 2, 2, numbers)
+Figure_10B
+```
+
+**Figure 10**: Injection of AAV-FLEX-G prevents anterograde spreading of RabV from afferent terminals. A: side by side comparison of pooled transverse distribution of infected interneurons from GS (left) and TA (right) with AAV-G or AAV-FLEX-G and RabV. The distributions obtained with AAV-G show a marked mediolateral shift and extensive labelling of superficial dorsal horn neurons, a feature that is absent when anterograde transfer is prevented by restricting the expression of the G protein to motor neurons only. The distributions obtained are very similar across the different muscles, but the mediolateral shift is reflected in the lower correlation values and high hierarchical bootstrapped effect size (B) between AAV-G and AAV-FLEX-G injections.
+
+```{r, echo=FALSE, warning=FALSE, fig.align='center', fig.width=5 ,fig.height=12}
+
+## -- 10C -- ##
+colors_vector <- c("#006eb8", "#003e68", "#eda911", "#be6100")
+titer_used <- 0
+method_used <- "AAV-G_WT"
+dat10C <- df_individual(data_all, method_used, titer_used, gs, ta , GS, TA) 
+dat10C <- dat10C %>% mutate(group = ifelse(group == "GS", "gs_AAV-G_WT", "ta_AAV-G_WT"))
+method_used <- "AAV-G-FLEX_ChAT-cre"
+df <- df_individual(data_all, method_used, titer_used, gs, ta , GS, TA)
+df <- df %>% mutate(group = ifelse(group == "GS", "gs_AAV-G-FLEX_ChAT", "ta_AAV-G-FLEX_ChAT"))
+dat10C <- rbind(dat10C, df)
+dat10C$group <- factor(dat10C$group, levels = c("gs_AAV-G_WT","gs_AAV-G-FLEX_ChAT", "ta_AAV-G_WT", "ta_AAV-G-FLEX_ChAT"))
+Figure_10C_interactive <- Boxplot_methods_interactive(dat10C, colors_vector, ymin_d, ymax_950)
+
+
+
+Fig_10C_interactive <- subplot(Figure_10C_interactive, widths = c(1), heights = c(1)) 
+Fig_10C_interactive <- Fig_10C_interactive %>% layout(width = 500, height = 500)
+Fig_10C_interactive
+```
+
+.
+
+Medians evidence the mediolateral shift obtained the different methods, AAV-G and AAV-FLEX-G injections.
+
+# Figure 11
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', , fig.width= 12 , fig.height= 4}
+
+## -- Figure 11 -- ##
+method_used <- "PRV_WT"
+Size <- c(0.1, 0)
+kernel <- 6
+bin <- 5
+titer_used <- "high"
+df <- data_all %>% filter(method == as.character(method_used), titer == as.character(titer_used))
+animals <- distinct(data.frame(df$animal))
+Animal <- as.character(animals$df.animal)
+
+## -- 11C coronal -- ##
+panel <- "C"
+density <- 1
+concatenate <- 1
+Figure_11Ci <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 4, 
+                                         2, IN, N_A, Size, GS, TA, kernel, bin, method_used, titer_used, panel)
+
+## -- 11C rostro-caudal ipsi-contra-- ##
+kernel <- 1.5
+Figure_11Cii <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 4, 
+                                          2, IN, N_A, Size, kernel, bin, method_used, titer_used)
+
+## -- 11C rostro-caudal ventro-dorsal-- ##
+kernel <- 1.5
+Figure_11Ciii <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 4, 
+                                           2, IN, N_A, Size, kernel, bin, titer_used, method_used)
+
+cowplot::plot_grid(Figure_11Ci, NULL, Figure_11Cii,NULL, Figure_11Ciii,
+                   ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 6 ,fig.height= 5}
+## -- 11D -- ##
+N <- c(21, 21)
+lim <- c(-850, 850, -450, 450)
+numbers <- 1
+panel <- "D"
+Figure_11D <- Corr_HedgesG(data_all, gs, ta, method_used, titer_used, N, lim, panel, color_gs, color_ta, 4, 4, numbers)
+Figure_11D
+```
+
+**Figure 11**: Injections of PRV-Bartha in GS and TA muscles give rise to similar distribution of premotor interneurons. The distributioof premotor interneurons are similar along all axis (C). For each section the data are scaled to the reference points indicated in the methods in order to account for size differences along the segments. Individual experiments are highly correlated, with small effect size (D).
+
+```{r, echo=FALSE, warning=FALSE, fig.align='center', fig.width=8 ,fig.height=2}
+## -- 11E -- ##
+Figure_11E_interactive <- boxplot_per_sample_interactive(data_all, method_used, titer_used, gs, ta, color_gs, color_ta, ymin_d, ymax_950)
+## -- 11F -- ##
+dat11F <- df_individual(data_all, method_used, titer_used, gs, ta, GS, TA) 
+Figure_11F_interactive <- Boxplot_individual_interactive(dat11F, color_gs, color_ta, ymin_d, ymax_950)
+
+
+Fig_11EF_interactive <- subplot(Figure_11E_interactive, Figure_11F_interactive, widths = c(0.8,0.2), heights = c(1)) 
+Fig_11EF_interactive <- Fig_11EF_interactive %>% layout(width = 900, height = 450)
+Fig_11EF_interactive
+```
+
+Box and whisker plots of median values of all the medio-lateral distributions with identical values for flexor and extensor injections.
+
+# Figure 12
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 ,fig.height= 10.4}
+data <- data_all %>% filter(muscle == lg |muscle == gs | muscle == ta)
+R <- 5000
+N <- c(21, 21)
+lim <- c(-850, 850, -450, 450)
+titer_used <- 1
+
+df_Hedges <- get_Hedges_boot(titer_used, data, R)
+df_corr <- get_Corr_concatenate(data, titer_used, N, lim)
+if (identical(df_corr$method_1, df_Hedges$method_1) & identical(df_corr$method_1,df_Hedges$method_1)) {
+  df_corr_Hedges <- cbind(df_corr, df_Hedges$HedgesGcoef, stringsAsFactors = FALSE)
+} else { print("error in correlation or Hedges G oefficient order")}
+colnames(df_corr_Hedges) <- c("sample_1", "sample_2", "CorrCoef", "HedgesG") # Function "organise_Corr_hedges" is built to use dataframe with these exact colonnes' name. 
+remove <- c("-cre", "_RGT", "G_Rab_")
+df_corr_Hedges$sample_1 <- str_remove_all(df_corr_Hedges$sample_1, paste(remove, collapse = "|"))
+df_corr_Hedges$sample_2 <- str_remove_all(df_corr_Hedges$sample_2, paste(remove, collapse = "|"))
+df_corr_Hedges <- organise_Corr_hedges(df_corr_Hedges)
+numbers <- 1
+color1 <- c(color_gs, color_ta,color_gs, color_ta,color_gs, color_ta)
+color2 <- c(color_gs, color_ta,color_gs, color_ta,color_gs, color_ta)
+panel <- "A"
+Figure_12A <- Corr_HedgesG_methods(df_corr_Hedges, panel, color1, color2, 6, 6, numbers)
+Figure_12A
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='center', fig.width=8 ,fig.height=9}
+
+## -- 12B -- ##
+
+colors_vector <- rep(c("#006eb8", "#eda911"), times= 6)
+titer_used <- "high"
+method_used <- "G_Rab_ChAT_RGT"
+dat12B <- df_individual(data_all, method_used, titer_used, lg, ta , LG, TA) 
+dat12B <- dat12B %>% mutate(group = ifelse(group == "LG", "LG_ChAT_high", "TA_ChAT_high"))
+titer_used <- "low"
+method_used <- "G_Rab_ChAT_RGT"
+df <- df_individual(data_all, method_used, titer_used, lg, ta , LG, TA) 
+df <- df %>% mutate(group = ifelse(group == "LG", "LG_ChAT_low", "TA_ChAT_low"))
+dat12B <- rbind(dat12B, df)
+titer_used <- 0
+method_used <- "G_Rab_Olig2_RGT"
+df <- df_individual(data_all, method_used, titer_used, gs, ta , GS, TA) 
+df <- df %>% mutate(group = ifelse(group == "GS", "GS_Olig2", "TA_Olig2"))
+dat12B<- rbind(dat12B, df)
+method_used <- "AAV-G_WT"
+df <- df_individual(data_all, method_used, titer_used, gs, ta , GS, TA)
+df <- df %>% mutate(group = ifelse(group == "GS", "GS_AAV-G_wt", "TA_AAV-G_wt"))
+dat12B<- rbind(dat12B, df)
+method_used <- "AAV-G-FLEX_ChAT-cre"
+df <- df_individual(data_all, method_used, titer_used, gs, ta , GS, TA)
+df <- df %>% mutate(group = ifelse(group == "GS", "GS_AAV-Flex-G_ChAT", "TA_AAV-Flex-G_ChAT"))
+dat12B<- rbind(dat12B, df)
+method_used <- "PRV_WT"
+df <- df_individual(data_all, method_used, titer_used, gs, ta , GS, TA)
+df <- df %>% mutate(group = ifelse(group == "GS", "GS_PRV", "TA_PRV"))
+dat12B<- rbind(dat12B, df)
+dat12B$group <- factor(dat12B$group, levels = c("LG_ChAT_high", "TA_ChAT_high","LG_ChAT_low", "TA_ChAT_low","GS_Olig2", "TA_Olig2", "GS_AAV-G_wt", "TA_AAV-G_wt", "GS_AAV-Flex-G_ChAT", "TA_AAV-Flex-G_ChAT", "GS_PRV", "TA_PRV"))
+
+Figure_12B_interactive <- Boxplot_methods_interactive(dat12B, colors_vector, ymin_d, ymax_950)
+Figure_12B_interactive <- Figure_12B_interactive %>% layout(width = 900, height = 500)
+Figure_12B_interactive
+```
+
+.
+
+**Figure 12**: Regardless of the tracing methods, flexor and extensor related premotor interneurons distributions are always overlapping. The correlation and absolute value of hierarchical bootstrapped Hedges' G coefficient matrix across pooled experiments obtained with different injection strategies exhibits high values of correlation  and low effect sizes across different techniques and across the two different muscles (A). The median values of the mediolateral position of premotor interneurons are similar for all conditions (B).
+
+# Figure 12 figure supplement 1
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+
+panel <- ""
+concatenate = 0
+density <- 0
+kernel <- 6
+bin <- 5
+Size <- c(0.2, 2)
+
+method_used <- "G_Rab_ChAT_RGT"
+titer_used <- "high"
+Animal <- "170427n2_n_rmb"
+
+plot_xy_170427n2_n_rmb <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 1, 
+                                                    1, IN, MN, Size, LG, TA, kernel, bin, method_used, titer_used, panel)
+plot_xz_170427n2_n_rmb <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 1, 
+                                                    1, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_170427n2_n_rmb <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 1, 
+                                                    1, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("170427n2", x = 0.5,hjust = 0, fontface = 'bold',size = 28)
+Fig_170427n2_n_rmb <- cowplot::plot_grid(plot_xy_170427n2_n_rmb, NULL, plot_xz_170427n2_n_rmb, NULL, plot_yz_170427n2_n_rmb, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid( title, Fig_170427n2_n_rmb,ncol = 1, rel_heights = c(0.1, 1))
+
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+Animal <- "170427n3_n_rmb"
+plot_xy_170427n3_n_rmb <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 1, 
+                                                    1, IN, MN, Size, LG, TA, kernel, bin, method_used, titer_used, panel)
+plot_xz_170427n3_n_rmb <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 1, 
+                                                    1, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_170427n3_n_rmb <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 1, 
+                                                    1, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("170427n3", x = 0.5,hjust = 0, fontface = 'bold',size = 28)
+Fig_170427n3_n_rmb <- cowplot::plot_grid(plot_xy_170427n3_n_rmb, NULL, plot_xz_170427n3_n_rmb, NULL, plot_yz_170427n3_n_rmb, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid( title, Fig_170427n3_n_rmb,ncol = 1, rel_heights = c(0.1, 1))
+
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+
+Animal <- "170503n6_n_rmb"
+plot_xy_170503n6_n_rmb <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 1, 
+                                                    1, IN, MN, Size, LG, TA, kernel, bin, method_used, titer_used, panel)
+plot_xz_170503n6_n_rmb <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 1, 
+                                                    1, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_170503n6_n_rmb <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 1, 
+                                                    1, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("170503n6", x = 0.5,hjust = 0, fontface = 'bold',size = 28)
+Fig_170503n6_n_rmb <- cowplot::plot_grid(plot_xy_170503n6_n_rmb, NULL, plot_xz_170503n6_n_rmb, NULL, plot_yz_170503n6_n_rmb, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid( title, Fig_170503n6_n_rmb,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+**Figure 12 figure supplement 1**: Distribution of motor neurons (triangles) and premotor interneurons (dots) of 3 LG (blue) and TA (yellow) double injections (UCL) of rabies virus in *ChAT::Cre+/-; RFGT+/-* mice.
+
+# Figure 12 figure supplement 2
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+Animal <- "1577_n_djm"
+plot_xy_1577_n_djm <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 1, 1, IN, MN, Size, LG, TA, kernel, bin, method_used, titer_used, panel)
+kernel <- 4
+plot_xz_1577_n_djm <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 1,1, IN, MN, Size, kernel, bin, method_used, titer_used)
+
+plot_yz_1577_n_djm <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 1,1, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("1577", x = 0.54,hjust = 0, fontface = 'bold',size = 28)
+Fig_1577_n_djm <- cowplot::plot_grid(plot_xy_1577_n_djm, NULL, plot_xz_1577_n_djm, NULL, plot_yz_1577_n_djm, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid( title, Fig_1577_n_djm,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+Animal <- "1578_n_djm"
+plot_xy_1578_n_djm <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 1, 1, IN, MN, Size, LG, TA, kernel, bin, method_used, titer_used, panel)
+kernel <- 4
+plot_xz_1578_n_djm <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 1, 1, IN, MN, Size, kernel, bin, method_used, titer_used)
+
+plot_yz_1578_n_djm <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 1,1, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("1578", x = 0.54,hjust = 0, fontface = 'bold',size = 28)
+Fig_1578_n_djm <- cowplot::plot_grid(plot_xy_1578_n_djm, NULL, plot_xz_1578_n_djm, NULL, plot_yz_1578_n_djm, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_1578_n_djm,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+**Figure 12 figure supplement 2** Distribution of motor neurons (triangles) and premotor interneurons (dots) of 2 LG (blue) and TA (yellow) double injections (UoG) of rabies virus in *ChAT::Cre+/-; RFGT+/-* mice.
+
+# Figure 12 figure supplement 3
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+Animal <- "170125n3_n_rmb"
+plot_xy_170125n3_n_rmb <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, lg, mg, color_range_ext, color_range_ext2, color_lg, color_mg, 1,1, IN, MN, Size, LG, MG, kernel, bin, method_used, titer_used, panel)
+plot_xz_170125n3_n_rmb <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, lg, mg, color_range_ext, color_range_ext2, color_lg, color_mg, 1, 1, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_170125n3_n_rmb <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, lg, mg, color_range_ext, color_range_ext2, color_lg, color_mg, 1,1, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("170125n3", x = 0.5,hjust = 0, fontface = 'bold',size = 28)
+Fig_170125n3_n_rmb <- cowplot::plot_grid(plot_xy_170125n3_n_rmb, NULL, plot_xz_170125n3_n_rmb, NULL, plot_yz_170125n3_n_rmb, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_170125n3_n_rmb,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+
+Animal <- "170508n7_n_rmb"
+plot_xy_170508n7_n_rmb <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, lg, mg, color_range_ext, color_range_ext2, color_lg, color_mg, 1,1, IN, MN, Size, LG, MG, kernel, bin, method_used, titer_used, panel)
+plot_xz_170508n7_n_rmb <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, lg, mg, color_range_ext, color_range_ext2, color_lg, color_mg, 1,1, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_170508n7_n_rmb <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, lg, mg, color_range_ext, color_range_ext2, color_lg, color_mg, 1,1, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("170508n7", x = 0.5,hjust = 0, fontface = 'bold',size = 28)
+Fig_170508n7_n_rmb <- cowplot::plot_grid(plot_xy_170508n7_n_rmb, NULL, plot_xz_170508n7_n_rmb, NULL, plot_yz_170508n7_n_rmb, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_170508n7_n_rmb,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+**Figure 12 figure supplement 3** Distribution of motor neurons (triangles) and premotor interneurons (dots) of 2 LG (blue) and MG (dark blue) double injections (UCL) of rabies virus in *ChAT::Cre+/-; RFGT+/-* mice.
+
+# Figure 12 figure supplement 4
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+Animal <- "1579_n_djm"
+plot_xy_1579_n_djm <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, lg, mg, color_range_ext, color_range_ext2, color_lg, color_mg, 1, 1, IN, MN, Size, LG, MG, kernel, bin, method_used, titer_used, panel)
+kernel <- 4
+plot_xz_1579_n_djm <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, lg, mg, color_range_ext, color_range_ext2, color_lg, color_mg, 1, 1, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_1579_n_djm <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, lg, mg, color_range_ext, color_range_ext2, color_lg, color_mg, 1, 1, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("1579", x = 0.54,hjust = 0, fontface = 'bold',size = 28)
+Fig_1579_n_djm <- cowplot::plot_grid(plot_xy_1579_n_djm, NULL, plot_xz_1579_n_djm, NULL, plot_yz_1579_n_djm, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_1579_n_djm,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+Animal <- "1580_n_djm"
+plot_xy_1580_n_djm <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, lg, mg, color_range_ext, color_range_ext2, color_lg, color_mg, 1, 1, IN, MN, Size, LG, MG, kernel, bin, method_used, titer_used, panel)
+kernel <- 4
+plot_xz_1580_n_djm <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, lg, mg, color_range_ext, color_range_ext2, color_lg, color_mg, 1, 1, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_1580_n_djm <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, lg, mg, color_range_ext, color_range_ext2, color_lg, color_mg, 1, 1, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("1580", x = 0.54,hjust = 0, fontface = 'bold',size = 28)
+Fig_1580_n_djm <- cowplot::plot_grid(plot_xy_1580_n_djm, NULL, plot_xz_1580_n_djm, NULL, plot_yz_1580_n_djm, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_1580_n_djm,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+Animal <- "1701_n_djm"
+plot_xy_1701_n_djm <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, lg, mg, color_range_ext, color_range_ext2, color_lg, color_mg, 1, 1, IN, MN, Size, LG, MG, kernel, bin, method_used, titer_used, panel)
+kernel <- 4
+plot_xz_1701_n_djm <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, lg, mg, color_range_ext, color_range_ext2, color_lg, color_mg, 1, 1, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_1701_n_djm <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, lg, mg, color_range_ext, color_range_ext2, color_lg, color_mg, 1, 1, IN, MN, Size, kernel, bin, titer_used, method_used)
+title <- ggdraw() + draw_label("1701", x = 0.54,hjust = 0, fontface = 'bold',size = 28)
+Fig_1701_n_djm <- cowplot::plot_grid(plot_xy_1701_n_djm, NULL, plot_xz_1701_n_djm, NULL, plot_yz_1701_n_djm, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_1701_n_djm,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+Animal <- "1702_n_djm"
+plot_xy_1702_n_djm <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, lg, mg, color_range_ext, color_range_ext2, color_lg, color_mg, 1,1, IN, MN, Size, LG, MG, kernel, bin, method_used, titer_used, panel)
+kernel <- 4
+plot_xz_1702_n_djm <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, lg, mg, color_range_ext, color_range_ext2, color_lg, color_mg, 1,1, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_1702_n_djm <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, lg, mg, color_range_ext, color_range_ext2, color_lg, color_mg, 1, 1, IN, MN, Size, kernel, bin, titer_used, method_used)
+title <- ggdraw() + draw_label("1702", x = 0.54,hjust = 0, fontface = 'bold',size = 28)
+Fig_1702_n_djm <- cowplot::plot_grid(plot_xy_1702_n_djm, NULL, plot_xz_1702_n_djm, NULL, plot_yz_1702_n_djm, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_1702_n_djm,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+**Figure 12 figure supplement 4** Distribution of motor neurons (triangles) and premotor interneurons (dots) of 4 LG (blue) and MG (yellow) double injections (UoG) of rabies virus in *ChAT::Cre+/-; RFGT+/-* mice.
+
+# Figure 12 figure supplement 5
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+Animal <- "170125n7_n_rmb"
+plot_xy_170125n7_n_rmb <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, ta, pl, color_range_flex, color_range_flex2, color_ta, color_pl, 1,1, IN, MN, Size, TA, PL, kernel, bin, method_used, titer_used, panel)
+plot_xz_170125n7_n_rmb <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, ta, pl, color_range_flex, color_range_flex2, color_ta, color_pl, 1,1, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_170125n7_n_rmb <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, ta, pl, color_range_flex, color_range_flex2, color_ta, color_pl, 1,1, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("170125n7", x = 0.5,hjust = 0, fontface = 'bold',size = 28)
+Fig_170125n7_n_rmb <- cowplot::plot_grid(plot_xy_170125n7_n_rmb, NULL, plot_xz_170125n7_n_rmb, NULL, plot_yz_170125n7_n_rmb, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_170125n7_n_rmb,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+Animal <- "170125n8_n_rmb"
+plot_xy_170125n8_n_rmb <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, ta, pl, color_range_flex, color_range_flex2, color_ta, color_pl, 1,1, IN, MN, Size, TA, PL, kernel, bin, method_used, titer_used, panel)
+plot_xz_170125n8_n_rmb <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, ta, pl, color_range_flex, color_range_flex2, color_ta, color_pl, 1,1, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_170125n8_n_rmb <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, ta, pl, color_range_flex, color_range_flex2, color_ta, color_pl, 1, 1, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("170125n8", x = 0.5,hjust = 0, fontface = 'bold',size = 28)
+Fig_170125n8_n_rmb <- cowplot::plot_grid(plot_xy_170125n8_n_rmb, NULL, plot_xz_170125n8_n_rmb, NULL, plot_yz_170125n8_n_rmb, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_170125n8_n_rmb,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+**Figure 12 figure supplement 5** Distribution of motor neurons (triangles) and premotor interneurons (dots) of 2 TA (yellow) and PL (dark orange) double injections (UCL) of rabies virus in *ChAT::Cre+/-; RFGT+/-* mice.
+
+# Figure 12 figure supplement 6
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+Animal <- "1605_n_djm"
+plot_xy_1605_n_djm <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, mg, N_A, color_range_ext2, transpa, color_mg, transpa, 1, 0, IN, MN, Size, MG, N_A, kernel, bin, method_used, titer_used, panel)
+kernel <- 4
+plot_xz_1605_n_djm <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, mg, N_A, color_range_ext2, transpa, color_mg, transpa, 1, 0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_1605_n_djm <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, mg, N_A, color_range_ext2, transpa, color_mg, transpa, 1,0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("1605", x = 0.54,hjust = 0, fontface = 'bold',size = 28)
+Fig_1605_n_djm <- cowplot::plot_grid(plot_xy_1605_n_djm, NULL, plot_xz_1605_n_djm, NULL, plot_yz_1605_n_djm, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_1605_n_djm,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+Animal <- "1660_n_djm"
+plot_xy_1660_n_djm <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, mg, N_A, color_range_ext2, transpa, color_mg, transpa, 1,0, IN, MN, Size, MG, N_A, kernel, bin, method_used, titer_used, panel)
+kernel <- 4
+plot_xz_1660_n_djm <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, mg, N_A, color_range_ext2, transpa, color_mg, transpa, 1,0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_1660_n_djm <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, mg, N_A, color_range_ext2, transpa, color_mg, transpa, 1,0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("1660", x = 0.54,hjust = 0, fontface = 'bold',size = 28)
+Fig_1660_n_djm <- cowplot::plot_grid(plot_xy_1660_n_djm, NULL, plot_xz_1660_n_djm, NULL, plot_yz_1660_n_djm, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_1660_n_djm,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+Animal <- "1661_n_djm"
+plot_xy_1661_n_djm <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, mg, N_A, color_range_ext2, transpa, color_mg, transpa, 1,0, IN, MN, Size, MG, N_A, kernel, bin, method_used, titer_used, panel)
+kernel <- 4
+plot_xz_1661_n_djm <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, mg, N_A, color_range_ext2, transpa, color_mg, transpa, 1,0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_1661_n_djm <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, mg, N_A, color_range_ext2, transpa, color_mg, transpa, 1,0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("1661", x = 0.54,hjust = 0, fontface = 'bold',size = 28)
+Fig_1661_n_djm <- cowplot::plot_grid(plot_xy_1661_n_djm, NULL, plot_xz_1661_n_djm, NULL, plot_yz_1661_n_djm, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_1661_n_djm,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+Animal <- "1662_n_djm"
+plot_xy_1662_n_djm <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, mg, N_A, color_range_ext2, transpa, color_mg, transpa, 1, 0, IN, MN, Size, MG, N_A, kernel, bin, method_used, titer_used, panel)
+kernel <- 4
+plot_xz_1662_n_djm <-complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, mg, N_A, color_range_ext2, transpa, color_mg, transpa, 1, 0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_1662_n_djm <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, mg, N_A, color_range_ext2, transpa, color_mg, transpa, 1, 0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("1662", x = 0.54,hjust = 0, fontface = 'bold',size = 28)
+Fig_1662_n_djm <- cowplot::plot_grid(plot_xy_1662_n_djm, NULL, plot_xz_1662_n_djm, NULL, plot_yz_1662_n_djm, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_1662_n_djm,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+**Figure 12 figure supplement 6** Distribution of motor neurons (triangles) and premotor interneurons (dots) of 4 MG (dark blue) single injections (UoG) of rabies virus in *ChAT::Cre+/-; RFGT+/-* mice.
+
+# Figure 12 figure supplement 7
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+Animal <- "1611_n_djm"
+plot_xy_1611_n_djm <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, pl, N_A, color_range_flex2, transpa, color_pl, transpa, 1,0, IN, MN, Size, PL, N_A, kernel, bin, method_used, titer_used, panel)
+kernel <- 4
+plot_xz_1611_n_djm <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, pl, N_A, color_range_flex2, transpa, color_pl, transpa, 1,  0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_1611_n_djm <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, pl, N_A, color_range_flex2, transpa, color_pl, transpa, 1,  0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("1611", x = 0.54,hjust = 0, fontface = 'bold',size = 28)
+Fig_1611_n_djm <- cowplot::plot_grid(plot_xy_1611_n_djm, NULL, plot_xz_1611_n_djm, NULL, plot_yz_1611_n_djm, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_1611_n_djm,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+Animal <- "1613_n_djm"
+plot_xy_1613_n_djm <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, pl, N_A, color_range_flex2, transpa, color_pl, transpa, 1, 0, IN, MN, Size, PL, N_A, kernel, bin, method_used, titer_used, panel)
+kernel <- 4
+plot_xz_1613_n_djm <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, pl, N_A, color_range_flex2, transpa, color_pl, transpa, 1, 0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_1613_n_djm <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, pl, N_A, color_range_flex2, transpa, color_pl, transpa, 1, 0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("1613", x = 0.54,hjust = 0, fontface = 'bold',size = 28)
+Fig_1613_n_djm <- cowplot::plot_grid(plot_xy_1613_n_djm, NULL, plot_xz_1613_n_djm, NULL, plot_yz_1613_n_djm, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_1613_n_djm,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+Animal <- "1640_n_djm"
+plot_xy_1640_n_djm <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, pl, N_A, color_range_flex2, transpa, color_pl, transpa, 1,0, IN, MN, Size, PL, N_A, kernel, bin, method_used, titer_used, panel)
+kernel <- 4
+plot_xz_1640_n_djm <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, pl, N_A, color_range_flex2, transpa, color_pl, transpa, 1,0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_1640_n_djm <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, pl, N_A, color_range_flex2, transpa, color_pl, transpa, 1,0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("1640", x = 0.54,hjust = 0, fontface = 'bold',size = 28)
+Fig_1640_n_djm <- cowplot::plot_grid(plot_xy_1640_n_djm, NULL, plot_xz_1640_n_djm, NULL, plot_yz_1640_n_djm, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_1640_n_djm,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+**Figure 12 figure supplement 7** Distribution of motor neurons (triangles) and premotor interneurons (dots) of 3 PL (dark orange) single injections (UoG) of rabies virus in *ChAT::Cre+/-; RFGT+/-* mice.
+
+# Figure 12 figure supplement 8
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+titer_used <- "low"
+Animal <- "1644_n_djm"
+plot_xy_1644_n_djm <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 1, 1, IN, MN, Size, LG, TA, kernel, bin, method_used, titer_used, panel)
+kernel <- 4
+plot_xz_1644_n_djm <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 1,  1, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_1644_n_djm <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 1, 1, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+
+title <- ggdraw() + draw_label("1644", x = 0.54,hjust = 0, fontface = 'bold',size = 28)
+Fig_1644_n_djm <- cowplot::plot_grid(plot_xy_1644_n_djm, NULL, plot_xz_1644_n_djm, NULL, plot_yz_1644_n_djm, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_1644_n_djm,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+Animal <- "1646_n_djm"
+plot_xy_1646_n_djm <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 1, 1, IN, MN, Size, LG, TA, kernel, bin, method_used, titer_used, panel)
+kernel <- 4
+plot_xz_1646_n_djm <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 1, 1, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_1646_n_djm <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 1, 1, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("1646", x = 0.54,hjust = 0, fontface = 'bold',size = 28)
+Fig_1646_n_djm <- cowplot::plot_grid(plot_xy_1646_n_djm, NULL, plot_xz_1646_n_djm, NULL, plot_yz_1646_n_djm, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_1646_n_djm,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+Animal <- "1653_n_djm"
+plot_xy_1653_n_djm <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 1,1, IN, MN, Size, LG, TA, kernel, bin, method_used, titer_used, panel)
+kernel <- 4
+plot_xz_1653_n_djm <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 1, 1, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_1653_n_djm <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, lg, ta, color_range_ext, color_range_flex, color_lg, color_ta, 1, 1, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("1653", x = 0.54,hjust = 0, fontface = 'bold',size = 28)
+Fig_1653_n_djm <- cowplot::plot_grid(plot_xy_1653_n_djm, NULL, plot_xz_1653_n_djm, NULL, plot_yz_1653_n_djm, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_1653_n_djm,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+**Figure 12 figure supplement 8** Distribution of motor neurons (triangles) and premotor interneurons (dots) of 3 LG (blue) and TA (yellow) double injections with low titre rabies virus in *ChAT::Cre+/-; RFGT+/-* mice (UoG).
+
+# Figure 12 figure supplement 9
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+Animal <- "1656_n_djm"
+plot_xy_1656_n_djm <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, lg, N_A, color_range_ext, transpa, color_lg, transpa, 1,0, IN, MN, Size, LG, N_A, kernel, bin, method_used, titer_used, panel)
+kernel <- 4
+plot_xz_1656_n_djm <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, lg, N_A, color_range_ext, transpa, color_lg, transpa, 1, 0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_1656_n_djm <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, lg, N_A, color_range_ext, transpa, color_lg, transpa, 1,0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("1656", x = 0.54,hjust = 0, fontface = 'bold',size = 28)
+Fig_1656_n_djm <- cowplot::plot_grid(plot_xy_1656_n_djm, NULL, plot_xz_1656_n_djm, NULL, plot_yz_1656_n_djm, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_1656_n_djm,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+Animal <- "1657_n_djm"
+plot_xy_1657_n_djm <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, lg, N_A, color_range_ext, transpa, color_lg, transpa, 1, 0, IN, MN, Size, LG, N_A, kernel, bin, method_used, titer_used, panel)
+kernel <- 4
+plot_xz_1657_n_djm <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, lg, N_A, color_range_ext, transpa, color_lg, transpa, 1,  0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_1657_n_djm <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, lg, N_A, color_range_ext, transpa, color_lg, transpa, 1, 0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("1657", x = 0.54,hjust = 0, fontface = 'bold',size = 28)
+Fig_1657_n_djm <- cowplot::plot_grid(plot_xy_1657_n_djm, NULL, plot_xz_1657_n_djm, NULL, plot_yz_1657_n_djm, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_1657_n_djm,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+Animal <- "1570_n_djm"
+plot_xy_1570_n_djm <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, lg, N_A, color_range_ext, transpa, color_lg, transpa, 1,0, IN, MN, Size, LG, N_A, kernel, bin, method_used, titer_used, panel)
+kernel <- 4
+plot_xz_1570_n_djm <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, lg, N_A, color_range_ext, transpa, color_lg, transpa, 1,0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_1570_n_djm <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, lg, N_A, color_range_ext, transpa, color_lg, transpa, 1,0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("1570", x = 0.54,hjust = 0, fontface = 'bold',size = 28)
+Fig_1570_n_djm <- cowplot::plot_grid(plot_xy_1570_n_djm, NULL, plot_xz_1570_n_djm, NULL, plot_yz_1570_n_djm, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_1570_n_djm,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+Animal <- "1571_n_djm"
+plot_xy_1571_n_djm <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, lg, N_A, color_range_ext, transpa, color_lg, transpa, 1, 0, IN, MN, Size, LG, N_A, kernel, bin, method_used, titer_used, panel)
+kernel <- 4
+plot_xz_1571_n_djm <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, lg, N_A, color_range_ext, transpa, color_lg, transpa, 1,0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_1571_n_djm <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, lg, N_A, color_range_ext, transpa, color_lg, transpa, 1, 0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("1571", x = 0.54,hjust = 0, fontface = 'bold',size = 28)
+Fig_1571_n_djm <- cowplot::plot_grid(plot_xy_1571_n_djm, NULL, plot_xz_1571_n_djm, NULL, plot_yz_1571_n_djm, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_1571_n_djm,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+**Figure 12 figure supplement 9** Distribution of motor neurons (triangles) and premotor interneurons (dots) of 4 LG (blue) single injections with low titre rabies virus in *ChAT::Cre+/-; RFGT+/-* mice (UoG).
+
+# Figure 12 figure supplement 10
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+Animal <- "1573_n_djm"
+plot_xy_1573_n_djm <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, transpa, color_ta, transpa, 1, 0, IN, MN, Size, TA, N_A, kernel, bin, method_used, titer_used, panel)
+kernel <- 4
+plot_xz_1573_n_djm <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, transpa, color_ta, transpa, 1,0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_1573_n_djm <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, transpa, color_ta, transpa, 1,0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("1573", x = 0.54,hjust = 0, fontface = 'bold',size = 28)
+Fig_1573_n_djm <- cowplot::plot_grid(plot_xy_1573_n_djm, NULL, plot_xz_1573_n_djm, NULL, plot_yz_1573_n_djm, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_1573_n_djm,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+Animal <- "1574_n_djm"
+plot_xy_1574_n_djm <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, transpa, color_ta, transpa, 1,0, IN, MN, Size, TA, N_A, kernel, bin, method_used, titer_used, panel)
+kernel <- 4
+plot_xz_1574_n_djm <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, transpa, color_ta, transpa, 1,0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_1574_n_djm <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, transpa, color_ta, transpa, 1, 0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("1574", x = 0.54,hjust = 0, fontface = 'bold',size = 28)
+Fig_1574_n_djm <- cowplot::plot_grid(plot_xy_1574_n_djm, NULL, plot_xz_1574_n_djm, NULL, plot_yz_1574_n_djm, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_1574_n_djm,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+Animal <- "1639_n_djm"
+plot_xy_1639_n_djm <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, transpa, color_ta, transpa, 1,  0, IN, MN, Size, TA, N_A, kernel, bin, method_used, titer_used, panel)
+kernel <- 4
+plot_xz_1639_n_djm <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, transpa, color_ta, transpa, 1,  0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_1639_n_djm <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, transpa, color_ta, transpa, 1,0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("1639", x = 0.54,hjust = 0, fontface = 'bold',size = 28)
+Fig_1639_n_djm <- cowplot::plot_grid(plot_xy_1639_n_djm, NULL, plot_xz_1639_n_djm, NULL, plot_yz_1639_n_djm, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_1639_n_djm,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+**Figure 12 figure supplement 10** Distribution of motor neurons (triangles) and premotor interneurons (dots) of 3 TA (yellow) single injections with low titre rabies virus in *ChAT::Cre+/-; RFGT+/-* mice (UoG).
+
+# Figure 12 figure supplement 11
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+titer_used <- "high"
+method_used <- "G_Rab_Olig2_RGT"
+Animal <- "1332_n_nz"
+plot_xy_1332_n_nz_interactive <- xy_dot_interactive(spinal, data_all,Animal, color_gs, transpa)
+plot_xy_1332_n_nz <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_gs, transpa, 1, 0, IN, MN, Size, GS, N_A, kernel, bin, method_used, titer_used, panel)
+plot_xz_1332_n_nz <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_gs, transpa, 1,0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_1332_n_nz <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_gs, transpa, 1,0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("1332", x = 0.54,hjust = 0, fontface = 'bold',size = 28)
+Fig_1332_n_nz <- cowplot::plot_grid(plot_xy_1332_n_nz, NULL, plot_xz_1332_n_nz, NULL, plot_yz_1332_n_nz, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_1332_n_nz,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+Animal <- "1349_n_nz"
+plot_xy_1349_n_nz <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_gs, transpa, 1, 0, IN, MN, Size, GS, N_A, kernel, bin, method_used, titer_used, panel)
+plot_xz_1349_n_nz <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_gs, transpa, 1,0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_1349_n_nz <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_gs, transpa, 1, 0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("1349", x = 0.54,hjust = 0, fontface = 'bold',size = 28)
+Fig_1349_n_nz <- cowplot::plot_grid(plot_xy_1349_n_nz, NULL, plot_xz_1349_n_nz, NULL, plot_yz_1349_n_nz, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_1349_n_nz,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+Animal <- "353_n_nz"
+plot_xy_353_n_nz <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_lg, transpa, 1, 0, IN, MN, Size, GS, N_A, kernel, bin, method_used, titer_used, panel)
+plot_xz_353_n_nz <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_gs, transpa, 1,0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_353_n_nz <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_gs, transpa, 1, 0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("353", x = 0.55,hjust = 0, fontface = 'bold',size = 28)
+Fig_353_n_nz <- cowplot::plot_grid(plot_xy_353_n_nz, NULL, plot_xz_353_n_nz, NULL, plot_yz_353_n_nz, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_353_n_nz,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+Animal <- "399_n_nz"
+plot_xy_399_n_nz <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_lg, transpa, 1, 0, IN, MN, Size, GS, N_A, kernel, bin, method_used, titer_used, panel)
+plot_xz_399_n_nz <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_gs, transpa, 1,  0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_399_n_nz <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_gs, transpa, 1, 0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("399", x = 0.55,hjust = 0, fontface = 'bold',size = 28)
+Fig_399_n_nz <- cowplot::plot_grid(plot_xy_399_n_nz, NULL, plot_xz_399_n_nz, NULL, plot_yz_399_n_nz, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_399_n_nz,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+**Figure 12 figure supplement 11** Distribution of motor neurons (triangles) and premotor interneurons (dots) of 4 GS (blue) single injections with rabies virus in *Olig2::Cre +/-; RFGT+/-* mice (MDC).
+
+# Figure 12 figure supplement 12
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+Animal <- "700_n_nz"
+plot_xy_700_n_nz <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, transpa, color_ta, transpa, 1,0, IN, MN, Size, TA, N_A, kernel, bin, method_used, titer_used, panel)
+plot_xz_700_n_nz <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, transpa, color_ta, transpa, 1, 0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_700_n_nz <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, transpa, color_ta, transpa, 1,0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("700", x = 0.55,hjust = 0, fontface = 'bold',size = 28)
+Fig_700_n_nz <- cowplot::plot_grid(plot_xy_700_n_nz, NULL, plot_xz_700_n_nz, NULL, plot_yz_700_n_nz, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_700_n_nz,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+Animal <- "721_n_nz"
+plot_xy_721_n_nz <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, transpa, color_ta, transpa, 1, 0, IN, MN, Size, TA, N_A, kernel, bin, method_used, titer_used, panel)
+plot_xz_721_n_nz <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, transpa, color_ta, transpa, 1, 0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_721_n_nz <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, transpa, color_ta, transpa, 1,0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("721", x = 0.55,hjust = 0, fontface = 'bold',size = 28)
+Fig_721_n_nz <- cowplot::plot_grid(plot_xy_721_n_nz, NULL, plot_xz_721_n_nz, NULL, plot_yz_721_n_nz, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_721_n_nz,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+Animal <- "1324_n_nz"
+plot_xy_1324_n_nz <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, transpa, color_ta, transpa, 1,0, IN, MN, Size, TA, N_A, kernel, bin, method_used, titer_used, panel)
+plot_xz_1324_n_nz <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, transpa, color_ta, transpa, 1, 0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_1324_n_nz <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, transpa, color_ta, transpa, 1, 0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("1324", x = 0.54,hjust = 0, fontface = 'bold',size = 28)
+Fig_1324_n_nz <- cowplot::plot_grid(plot_xy_1324_n_nz, NULL, plot_xz_1324_n_nz, NULL, plot_yz_1324_n_nz, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_1324_n_nz,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+**Figure 12 figure supplement 12** Distribution of motor neurons (triangles) and premotor interneurons (dots) of 3 TA (yellow) single injections with rabies virus in *Olig2::Cre+/-; RFGT+/-* mice (MDC).
+
+# Figure 12 figure supplement 13
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+method_used <- "AAV-G_WT"
+Animal <- "1_n_slp"
+plot_xy_1_n_slp <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 1,1, IN, N_A, Size, GS, TA, kernel, bin, method_used, titer_used, panel)
+plot_xz_1_n_slp <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 1,1, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_1_n_slp <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 1, 1, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+
+title <- ggdraw() + draw_label("GS-TA_1", x = 0.5,hjust = 0, fontface = 'bold',size = 28)
+Fig_1_n_slp <- cowplot::plot_grid(plot_xy_1_n_slp, NULL, plot_xz_1_n_slp, NULL, plot_yz_1_n_slp, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_1_n_slp,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+Animal <- "2_n_slp"
+plot_xy_2_n_slp <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 1, 1, IN, N_A, Size, GS, TA, kernel, bin, method_used, titer_used, panel)
+plot_xz_2_n_slp <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 1, 1, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_2_n_slp <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 1, 1, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("GS-TA_2", x = 0.5,hjust = 0, fontface = 'bold',size = 28)
+Fig_2_n_slp <- cowplot::plot_grid(plot_xy_2_n_slp, NULL, plot_xz_2_n_slp, NULL, plot_yz_2_n_slp, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_2_n_slp,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+Animal <- "a_n_slp"
+plot_xy_a_n_slp <-  complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_gs, transpa, 1, 0, IN, MN, Size, GS, N_A, kernel, bin, method_used, titer_used, panel)
+kernel <- 4
+plot_xz_a_n_slp <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_gs, transpa, 1,0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_a_n_slp <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_gs, transpa, 1, 0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("GS_a", x = 0.54,hjust = 0, fontface = 'bold',size = 28)
+Fig_a_n_slp <- cowplot::plot_grid(plot_xy_a_n_slp, NULL, plot_xz_a_n_slp, NULL, plot_yz_a_n_slp, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_a_n_slp,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+Animal <- "b_n_slp"
+plot_xy_b_n_slp <-  complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_gs, transpa, 1, 0, IN, MN, Size, GS, N_A, kernel, bin, method_used, titer_used, panel)
+kernel <- 4
+plot_xz_b_n_slp <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_gs, transpa, 1, 0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_b_n_slp <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_gs, transpa, 1,0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("GS_b", x = 0.54,hjust = 0, fontface = 'bold',size = 28)
+Fig_b_n_slp <- cowplot::plot_grid(plot_xy_b_n_slp, NULL, plot_xz_b_n_slp, NULL, plot_yz_b_n_slp, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_b_n_slp,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+**Figure 12 figure supplement 13** Distribution of infected neurons (primary infected motor neurons or secondary infected interneurons are not distinguished) of 2 GS (blue) and TA (yellow) double injections and 2 GS single injections of rabies and AAV-Ef1a-B19G in wild type mice (Salk).
+
+# Figure 12 figure supplement 14
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+method_used <- "AAV-G-FLEX_ChAT-cre"
+Animal <- "22a_4_n_slp"
+plot_xy_22a_4_n_slp <-  complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_gs, transpa, 1,0, IN, MN, Size, GS, N_A, kernel, bin, method_used, titer_used, panel)
+plot_xz_22a_4_n_slp <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_gs, transpa, 1, 0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_22a_4_n_slp <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_gs, transpa, 1,0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("GS_22a_4", x = 0.5,hjust = 0, fontface = 'bold',size = 28)
+Fig_22a_4_n_slp <- cowplot::plot_grid(plot_xy_22a_4_n_slp, NULL, plot_xz_22a_4_n_slp, NULL, plot_yz_22a_4_n_slp, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_22a_4_n_slp,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+Animal <- "26a_1_n_slp"
+plot_xy_26a_1_n_slp <-  complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_gs, transpa, 1,0, IN, MN, Size, GS, N_A, kernel, bin, method_used, titer_used, panel)
+plot_xz_26a_1_n_slp <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_gs, transpa, 1, 0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_26a_1_n_slp <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_gs, transpa, 1, 0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("GS_26a_1", x = 0.5,hjust = 0, fontface = 'bold',size = 28)
+Fig_26a_1_n_slp <- cowplot::plot_grid(plot_xy_26a_1_n_slp, NULL, plot_xz_26a_1_n_slp, NULL, plot_yz_26a_1_n_slp, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_26a_1_n_slp,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+Animal <- "26a_2_n_slp"
+plot_xy_26a_2_n_slp <-  complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_gs, transpa, 1,0, IN, MN, Size, GS, N_A, kernel, bin, method_used, titer_used, panel)
+plot_xz_26a_2_n_slp <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_gs, transpa, 1,0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_26a_2_n_slp <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_gs, transpa, 1, 0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("GS_26a_2", x = 0.5,hjust = 0, fontface = 'bold',size = 28)
+Fig_26a_2_n_slp <- cowplot::plot_grid(plot_xy_26a_2_n_slp, NULL, plot_xz_26a_2_n_slp, NULL, plot_yz_26a_2_n_slp, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_26a_2_n_slp,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+Animal <- "26a_4_n_slp"
+plot_xy_26a_4_n_slp <-  complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_gs, transpa, 1,0, IN, MN, Size, GS, N_A, kernel, bin, method_used, titer_used, panel)
+plot_xz_26a_4_n_slp <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_gs, transpa, 1, 0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_26a_4_n_slp <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, gs, N_A, color_range_ext, transpa, color_gs, transpa, 1, 0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("GS_26a_4", x = 0.5,hjust = 0, fontface = 'bold',size = 28)
+Fig_26a_4_n_slp <- cowplot::plot_grid(plot_xy_26a_4_n_slp, NULL, plot_xz_26a_4_n_slp, NULL, plot_yz_26a_4_n_slp, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_26a_4_n_slp,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+**Figure 12 figure supplement 14** Distribution of infected neurons (primary infected motor neurons or secondary infected interneurons are not distinguished) of 4 GS (blue) single injections of rabies and AAV-CAG-Flex-oG in *Chat::Cre+/-* mice (Salk).
+
+# Figure 12 figure supplement 15
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+Animal <- "26_1_n_slp"
+plot_xy_26_1_n_slp <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, transpa, color_ta, transpa, 1,  0, IN, MN, Size, TA, N_A, kernel, bin, method_used, titer_used, panel)
+plot_xz_26_1_n_slp <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, transpa, color_ta, transpa, 1,0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_26_1_n_slp <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, transpa, color_ta, transpa, 1,0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("TA_26_1", x = 0.505,hjust = 0, fontface = 'bold',size = 28)
+Fig_26_1_n_slp <- cowplot::plot_grid(plot_xy_26_1_n_slp, NULL, plot_xz_26_1_n_slp, NULL, plot_yz_26_1_n_slp, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_26_1_n_slp,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+Animal <- "26_3_n_slp"
+plot_xy_26_3_n_slp <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, transpa, color_ta, transpa, 1,0, IN, MN, Size, TA, N_A, kernel, bin, method_used, titer_used, panel)
+plot_xz_26_3_n_slp <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, transpa, color_ta, transpa, 1, 0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_26_3_n_slp <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, transpa, color_ta, transpa, 1,0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("TA_26_3", x = 0.505,hjust = 0, fontface = 'bold',size = 28)
+Fig_26_3_n_slp <- cowplot::plot_grid(plot_xy_26_3_n_slp, NULL, plot_xz_26_3_n_slp, NULL, plot_yz_26_3_n_slp, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_26_3_n_slp,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+Animal <- "26_4_n_slp"
+plot_xy_26_4_n_slp <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, transpa, color_ta, transpa, 1,  0, IN, MN, Size, TA, N_A, kernel, bin, method_used, titer_used, panel)
+plot_xz_26_4_n_slp <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, transpa, color_ta, transpa, 1, 0, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_26_4_n_slp <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, transpa, color_ta, transpa, 1, 0, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("TA_26_4", x = 0.505,hjust = 0, fontface = 'bold',size = 28)
+Fig_26_4_n_slp <- cowplot::plot_grid(plot_xy_26_4_n_slp, NULL, plot_xz_26_4_n_slp, NULL, plot_yz_26_4_n_slp, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_26_4_n_slp,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+**Figure 12 figure supplement 15** Distribution of infected neurons (primary infected motor neurons or secondary infected interneurons are not distinguished) of 3 TA (yellow) single injections of rabies and AAV-CAG-Flex-oG in *Chat::Cre+/-* mice (Salk).
+
+# Figure 12 figure supplement 16
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+kernel <- 6
+method_used <- "PRV_WT"
+Animal <- "1_1_n_slp"
+plot_xy_1_1_n_slp <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 1, 1, IN, N_A, Size, GS, TA, kernel, bin, method_used, titer_used, panel)
+plot_xz_1_1_n_slp <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 1, 1, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_1_1_n_slp <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 1, 1, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("GS_TA_1_1", x = 0.49,hjust = 0, fontface = 'bold',size = 28)
+Fig_1_1_n_slp <- cowplot::plot_grid(plot_xy_1_1_n_slp, NULL, plot_xz_1_1_n_slp, NULL, plot_yz_1_1_n_slp, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_1_1_n_slp,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+Animal <- "1_4_n_slp"
+plot_xy_1_4_n_slp <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 1, 1, IN, N_A, Size, GS, TA, kernel, bin, method_used, titer_used, panel)
+plot_xz_1_4_n_slp <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 1, 1, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_1_4_n_slp <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 1, 1, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("GS_TA_1_4", x = 0.49,hjust = 0, fontface = 'bold',size = 28)
+Fig_1_4_n_slp <- cowplot::plot_grid(plot_xy_1_4_n_slp, NULL, plot_xz_1_4_n_slp, NULL, plot_yz_1_4_n_slp, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_1_4_n_slp,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+Animal <- "2_2_n_slp"
+plot_xy_2_2_n_slp <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 1, 1, IN, N_A, Size, GS, TA, kernel, bin, method_used, titer_used, panel)
+plot_xz_2_2_n_slp <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 1, 1, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_2_2_n_slp <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 1, 1, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("GS_TA_2_2", x = 0.49,hjust = 0, fontface = 'bold',size = 28)
+Fig_2_2_n_slp <- cowplot::plot_grid(plot_xy_2_2_n_slp, NULL, plot_xz_2_2_n_slp, NULL, plot_yz_2_2_n_slp, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_2_2_n_slp,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 , fig.height= 4}
+Animal <- "3_3_n_slp"
+plot_xy_3_3_n_slp <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 1,1, IN, N_A, Size, GS, TA, kernel, bin, method_used, titer_used, panel)
+plot_xz_3_3_n_slp <- complete_graph_xz_density(spinal_rc, spinal_rc_contra, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 1,  1, IN, MN, Size, kernel, bin, method_used, titer_used)
+plot_yz_3_3_n_slp <- complete_graph_yz_density(spinal_rc_y, spinal_rc_y_contra, density, concatenate, data_all, Animal, gs, ta, color_range_ext, color_range_flex, color_gs, color_ta, 1, 1, IN, MN, Size, kernel, bin, titer_used, method_used)
+
+title <- ggdraw() + draw_label("GS_TA_3_3", x = 0.49,hjust = 0, fontface = 'bold',size = 28)
+Fig_3_3_n_slp <- cowplot::plot_grid(plot_xy_3_3_n_slp, NULL, plot_xz_3_3_n_slp, NULL, plot_yz_3_3_n_slp, ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
+plot_grid(title, Fig_3_3_n_slp,ncol = 1, rel_heights = c(0.1, 1))
+```
+
+**Figure 12 figure supplement 16** Distribution of infected neurons (primary infected motor neurons or secondary infected interneurons are not distinguished) of 4 GS (blue) and TA (yellow) double injections of PRV-152 and PRV-614 in wild type mice (Salk).
+
+# Figure 13
+
+```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 5 ,fig.height= 8}
+
+
+## -- Figure 13 -- ##
+setwd("~/Desktop/last_version_segregation/Analysis/data")
+df13_BC <- read.xlsx(xlsxFile = "fig13B-C.xlsx", sheet = 2, skipEmptyRows = TRUE, colNames=TRUE)
+
+df13_BC$Section <- str_c(df13_BC$ID, "_", df13_BC$Section)
+sectionID <- distinct(data.frame(df13_BC$Section))
+sectionID <- unlist(sectionID, use.names = FALSE)
+for (i in 1:length(sectionID)){
+  cc <- df13_BC %>% filter(Section == as.character(sectionID[i]), Label == 0)
+  for (j in 1:nrow(df13_BC)) {
+    if (df13_BC$Section[j] == sectionID[i]){
+      df13_BC$Xpos[j] <- df13_BC$Xpos[j] - cc$Xpos 
+      df13_BC$Ypos[j] <- df13_BC$Ypos[j] - cc$Ypos
+    }
+  }
+}
+
+spinal_13 <- read.delim("halfcordt.txt", header = FALSE)
+spinal_13$V1 <- spinal_13$V1 * 1900
+spinal_13 <- spinal_13 %>% mutate(V2 = ifelse(V2 > 0, V2 * 1300, V2 * 1200))
+spinal_13_contra <- spinal_13[order(nrow(spinal_13):1),]
+spinal_13_contra$V1[sapply(spinal_13_contra$V1 , is.numeric)] <- spinal_13_contra$V1 [sapply(spinal_13_contra$V1, is.numeric)] * -1
+spinal_13 <- rbind(spinal_13, spinal_13_contra)
+
+## -- 13B -- ##
+df13_BC <- df13_BC %>%  mutate(Label = replace(Label, Label == 4, 3))
+df13_BC$Label <- as.character(as.character(df13_BC$Label))
+df13_BC_plot <- df13_BC %>%  filter(Label != 0)
+
+Figure_13B <- ggplot() +
+  annotate("point", x = 0, y = 0, size = 4, colour = "black") +
+  geom_path(data = spinal_13, aes(x = V1, y = V2), size = 1) + 
+  geom_point(data = df13_BC_plot, aes(x = Xpos, y = - Ypos, fill = Label), shape = 21, colour = "black", size = 2, alpha = 0.8) + #Here plotting -Ypos because ventral is positive in data frame
+  scale_y_continuous(limits=c(-600, 650), breaks=c(-600,0,650), expand = c(0, 0)) +
+  scale_x_continuous(limits=c(-955, 955), breaks=seq(from = -850, to = 850, by = 850), expand = c(0, 0)) +
+  scale_fill_manual(values = c("#7fff01","#ff6868","#ffcc33"), name = NULL, guide = "legend", labels = c("ChAT only", "TdTom only", "Dual")) +
+  ylab("V-D (μm)") +  
+  xlab("M-L (μm)") +
+  theme(axis.line = element_line(size = 0.5, colour = "black", linetype=1),
+        panel.background = element_rect(fill = "transparent", colour = "transparent"),
+        plot.background = element_rect(fill = "transparent", colour = NA_character_),
+        legend.background = element_rect(fill = "transparent", linetype = 'blank'), legend.position="top",
+        legend.text = element_text(face="bold"),
+        legend.key = element_rect(fill = "transparent")) +
+  guides(fill = guide_legend(override.aes = list(size=3))) 
+  
+Figure_13B  <- ggarrange(NULL, Figure_13B, nrow = 1, widths = c(0.2, 4), labels = "B", font.label = list(size = 28, color = "black"))
+
+
+## -- 13C -- ##
+
+Figure_13C <- plot(euler(c("ChAT"= sum(df13_BC_plot$Label == "1"),"TdTom"=sum(df13_BC_plot$Label == "2"),
+                           "ChAT&TdTom"=sum(df13_BC_plot$Label == "3"))), quantities = list(type = "counts", fontsize = 24), # if values wanted as percent -> quantities = list(type = "percent")
+                   fills=c("#7fff01","#ff6868","#ffcc33"), legend = NULL)
+Figure_13C  <- ggarrange(NULL, Figure_13C, nrow = 1, widths = c(0.2, 4), labels = "C", font.label = list(size = 28, color = "black"))
+
+cowplot::plot_grid(Figure_13B, Figure_13C, ncol=1,nrow = 2, align = "hv", rel_widths = c(5), rel_heights = c(4,4))
+```
+
+**Figure13**: Analysis of ectopic Cre expression in *ChAT-IRES-Cre* and *RCL-tdTom* mice. A: representative lumbar section stained with antibodies against ChAT (green) and tdTom (red) and (B) map of neurons labelled with both or one of the two antibodies in all the 13 analysed sections from 3 mice, showing that some of the tdTom positive neurons do not express ChAT, indicating either a developmental downregulation of ChAT expression or a modest leak in the Cre expression. C: Venn diagram showing the overall number of mapped neurons.
