@@ -4308,10 +4308,10 @@ get_Corr_HedgesG <- function(data_all, m1, m2, method_used, titer_used, N, lim) 
     if (titer_used != 0) {
     df <- data_corr %>% filter(method == as.character(method_used), titer == as.character(titer_used))
     }
+    if (titer_used == 0){
+      df <- data_corr %>% filter(method == as.character(method_used))
+    } 
   }
-  if (titer_used == 0){
-    df <- data_corr %>% filter(method == as.character(method_used))
-  } 
   if (length(titer_used) == 2){
     df <- data_corr %>% filter(method == as.character(method_used) & titer == as.character(titer_used[1]) |method == as.character(method_used) & titer == as.character(titer_used[2]) )
   }

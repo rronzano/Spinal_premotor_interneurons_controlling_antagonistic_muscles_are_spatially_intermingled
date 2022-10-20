@@ -1,11 +1,60 @@
 ---
 title: "Spinal premotor interneurons controlling antagonistic muscles are spatially intermingled"
-author: "Remi Ronzano*1, Sophie Skarlatou*2, Bianca K. Barriga*6,7, B. Anne Bannatyne*3, Gardave S. Bhumbra*4, Joshua D. Foster4, Jeffrey D. Moore8, Camille Lancelin1, Amanda Pocratsky1, Mustafa Görkem Özyurt1, Calvin C. Smith1, Andrew J. Todd3, David J. Maxwell3, Andrew J. Murray5, Samuel L. Pfaff6§, Robert M. Brownstone1§, Niccolò Zampieri2§, Marco Beato4§"
+author: ""
 date: "20/10/2022"
 output:
   html_document: default
   pdf_document: default
 ---
+
+Remi Ronzano^\*1^, Sophie Skarlatou\*^2^, Bianca K. Barriga^\*6,7^, B. Anne Bannatyne^\*3^, Gardave S. Bhumbra^\*4^, Joshua D. Foster^4^, Jeffrey D. Moore^8^, Camille Lancelin^1^, Amanda Pocratsky^1^, Mustafa Görkem Özyurt^1^, Calvin C. Smith^1^, Andrew J. Todd^3^, David J. Maxwell^3^, Andrew J. Murray^5^, Samuel L. Pfaff^6§^, Robert M. Brownstone^1§^, Niccolò Zampieri^2§^, Marco Beato^4§^
+
+^1^ Department of Neuromuscular Diseases, UCL Queen
+Square Institute of Neurology, University College London, London WC1N 3BG, UK
+
+^2^ Max Delbrück Center for Molecular
+Medicine (MDC), Roybert-Rössle-Str. 10, 13092 Berlin, Germany
+
+^3^ Institute of Neuroscience and Psychology, College of
+Medical, Veterinary and Life Sciences, University of Glasgow, West Medical Building, Glasgow G12 8QQ, UK
+
+^4^ Department of Neuroscience Physiology and
+Pharmacology (NPP), Gower Street, University College London, WC1E 6BT, UK
+
+^5^ Sainsbury Wellcome Centre for Neural Circuits and
+Behaviour, University College London, London W1T 4JG, UK
+
+^6^ The Salk Institute for Biological Studies, Gene
+Expression Laboratory, 10010 North Torrey Pines Road, La Jolla CA 92037, USA
+
+^7^ Biological
+Sciences Graduate Program, University of California, San Diego, 9500 Gilman
+Drive, La Jolla, CA 92037, USA.
+
+^8^ Howard Hughes Medical Institute and Department of Molecular and
+Cellular Biology, Center for Brain Science, Harvard University, Cambridge, MA
+02138, USA
+
+\*equal contribution
+
+^§^co-senior
+authors
+
+[Corresponding authors]{.ul}:
+
+Niccolò Zampieri, Max Delbrück Center for Molecular Medicine (MDC), Robert-Rössle-Str. 10, 13092 Berlin, Germany: [niccolo.zampieri\@mdc-berlin.de](mailto:niccolo.zampieri@mdc-berlin.de)
+
+Samuel J. Pfaff, The Salk Institute for Biological Studies, Gene Expression Laboratory, 10010 North Torrey Pines Road, La Jolla CA 92037, USA: [pfaff\@salk.edu](javascript:void(window.open('/imp/dynamic.php?page=compose&to=pfaff%40salk.edu&popup=1','','width=820,height=610,status=1,scrollbars=yes,resizable=yes')))
+
+Robert M. Brownstone, Department of Neuromuscular Diseases, UCL Queen Square Institute of Neurology, University College London, London WC1N 3BG, UK: [r.brownstone\@ucl.ac.uk](mailto:r.brownstone@ucl.ac.uk)
+
+Marco Beato, Department of Neuroscience Physiology and Pharmacology (NPP), Gower Street, University College London, WC1E 6BT, UK: m.beato\@ucl.ac.uk
+
+**Key words:** spinal cord, premotor interneurons, flexor muscles, extensor muscles, rabies, viral tracing
+
+# **Abstract**
+
+Elaborate behaviours are produced by tightly controlled flexor-extensor motor neuron activation patterns. Motor neurons are regulated by a network of interneurons within the spinal cord, but the computational processes involved in motor control are not fully understood. The neuroanatomical arrangement of motor and premotor neurons into topographic patterns related to their controlled muscles is thought to facilitate how information is processed by spinal circuits. Rabies retrograde monosynaptic tracing has been used to label premotor interneurons innervating specific motor neuron pools, with previous studies reporting topographic mediolateral positional biases in flexor and extensor premotor interneurons. To more precisely define how premotor interneurons contacting specific motor pools are organized we used multiple complementary viral-tracing approaches to minimize systematic biases associated with each method. Contrary to expectations, we found that premotor interneurons contacting motor pools controlling flexion and extension of the ankle are highly intermingled rather than segregated into specific domains like motor neurons. Thus, premotor spinal neurons controlling different muscles process motor instructions in the absence of clear spatial patterns among the flexor-extensor circuit components.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -13,9 +62,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r, echo=FALSE, message=FALSE}
 ## Main Directory ##
-
 maindir <- "~"
-
 
 library(openxlsx)
 library(reshape2)
@@ -41,7 +88,6 @@ library(plotlyGeoAssets)
 library(tools)
 library(stringr)
 library(png)
-library(magick)
 library(devtools)
 library(ggcorrplot)
 library(scales)
