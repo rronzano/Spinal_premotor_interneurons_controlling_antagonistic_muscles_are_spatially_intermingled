@@ -4304,8 +4304,10 @@ get_Corr_HedgesG <- function(data_all, m1, m2, method_used, titer_used, N, lim) 
   data_corr$animal <- str_c(data_corr$muscle, "_", data_corr$animal)
   remove <- c("_n_djm","_n_rmb", "_n_nz", "_n_slp")
   data_corr$animal <- str_remove_all(data_corr$animal, paste(remove, collapse = "|"))
-  if (length(titer_used) == 1 & titer_used != 0){
+  if (length(titer_used) == 1){
+    if (titer_used != 0) {
     df <- data_corr %>% filter(method == as.character(method_used), titer == as.character(titer_used))
+    }
   }
   if (titer_used == 0){
     df <- data_corr %>% filter(method == as.character(method_used))
