@@ -1,11 +1,13 @@
 ---
-title: "elife_2022"
-author: "R Ronzano"
+title: "Spinal premotor interneurons controlling antagonistic muscles are spatially intermingled"
+author: "Remi Ronzano*1, Sophie Skarlatou*2, Bianca K. Barriga*6,7, B. Anne Bannatyne*3, Gardave S. Bhumbra*4, Joshua D. Foster4, Jeffrey D. Moore8, Camille Lancelin1, Amanda Pocratsky1, Mustafa Görkem Özyurt1, Calvin C. Smith1, Andrew J. Todd3, David J. Maxwell3, Andrew J. Murray5, Samuel L. Pfaff6§, Robert M. Brownstone1§, Niccolò Zampieri2§, Marco Beato4§"
 date: "20/10/2022"
 output:
   html_document: default
   pdf_document: default
 ---
+
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -14,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r, echo=FALSE, message=FALSE}
 ## Main Directory ##
 
-maindir <- "~/Spinal_premotor_interneurons_controlling_antagonistic_muscles_are_spatially_intermingled"
+maindir <- "~"
 
 
 library(openxlsx)
@@ -50,7 +52,7 @@ library(ggvenn)
 library(ggplotify)
 library(gridExtra)
 library(boot)
-source("~/Spinal_premotor_interneurons_controlling_antagonistic_muscles_are_spatially_intermingled/functions_intermingled.R")
+source("~/functions_intermingled.R")
 
 ```
 
