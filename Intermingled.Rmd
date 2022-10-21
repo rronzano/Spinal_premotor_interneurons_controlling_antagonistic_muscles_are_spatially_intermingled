@@ -5,56 +5,92 @@ date: "20/10/2022"
 output:
   html_document: default
   pdf_document: default
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
-Remi Ronzano^\*1^, Sophie Skarlatou\*^2^, Bianca K. Barriga^\*6,7^, B. Anne Bannatyne^\*3^, Gardave S. Bhumbra^\*4^, Joshua D. Foster^4^, Jeffrey D. Moore^8^, Camille Lancelin^1^, Amanda Pocratsky^1^, Mustafa Görkem Özyurt^1^, Calvin C. Smith^1^, Andrew J. Todd^3^, David J. Maxwell^3^, Andrew J. Murray^5^, Samuel L. Pfaff^6§^, Robert M. Brownstone^1§^, Niccolò Zampieri^2§^, Marco Beato^4§^
+Remi Ronzano^\*1^, Sophie Skarlatou\*^2^, Bianca K. Barriga^\*6,7^, B.
+Anne Bannatyne^\*3^, Gardave S. Bhumbra^\*4^, Joshua D. Foster^4^,
+Jeffrey D. Moore^8^, Camille Lancelin^1^, Amanda Pocratsky^1^, Mustafa
+Görkem Özyurt^1^, Calvin C. Smith^1^, Andrew J. Todd^3^, David J.
+Maxwell^3^, Andrew J. Murray^5^, Samuel L. Pfaff^6§^, Robert M.
+Brownstone^1§^, Niccolò Zampieri^2§^, Marco Beato^4§^
 
-^1^ Department of Neuromuscular Diseases, UCL Queen
-Square Institute of Neurology, University College London, London WC1N 3BG, UK
+^1^ Department of Neuromuscular Diseases, UCL Queen Square Institute of
+Neurology, University College London, London WC1N 3BG, UK
 
-^2^ Max Delbrück Center for Molecular
-Medicine (MDC), Roybert-Rössle-Str. 10, 13092 Berlin, Germany
+^2^ Max Delbrück Center for Molecular Medicine (MDC),
+Roybert-Rössle-Str. 10, 13092 Berlin, Germany
 
-^3^ Institute of Neuroscience and Psychology, College of
-Medical, Veterinary and Life Sciences, University of Glasgow, West Medical Building, Glasgow G12 8QQ, UK
+^3^ Institute of Neuroscience and Psychology, College of Medical,
+Veterinary and Life Sciences, University of Glasgow, West Medical
+Building, Glasgow G12 8QQ, UK
 
-^4^ Department of Neuroscience Physiology and
-Pharmacology (NPP), Gower Street, University College London, WC1E 6BT, UK
+^4^ Department of Neuroscience Physiology and Pharmacology (NPP), Gower
+Street, University College London, WC1E 6BT, UK
 
-^5^ Sainsbury Wellcome Centre for Neural Circuits and
-Behaviour, University College London, London W1T 4JG, UK
+^5^ Sainsbury Wellcome Centre for Neural Circuits and Behaviour,
+University College London, London W1T 4JG, UK
 
-^6^ The Salk Institute for Biological Studies, Gene
-Expression Laboratory, 10010 North Torrey Pines Road, La Jolla CA 92037, USA
+^6^ The Salk Institute for Biological Studies, Gene Expression
+Laboratory, 10010 North Torrey Pines Road, La Jolla CA 92037, USA
 
-^7^ Biological
-Sciences Graduate Program, University of California, San Diego, 9500 Gilman
-Drive, La Jolla, CA 92037, USA.
+^7^ Biological Sciences Graduate Program, University of California, San
+Diego, 9500 Gilman Drive, La Jolla, CA 92037, USA.
 
 ^8^ Howard Hughes Medical Institute and Department of Molecular and
-Cellular Biology, Center for Brain Science, Harvard University, Cambridge, MA
-02138, USA
+Cellular Biology, Center for Brain Science, Harvard University,
+Cambridge, MA 02138, USA
 
 \*equal contribution
 
-^§^co-senior
-authors
+^§^co-senior authors
 
 [Corresponding authors]{.ul}:
 
-Niccolò Zampieri, Max Delbrück Center for Molecular Medicine (MDC), Robert-Rössle-Str. 10, 13092 Berlin, Germany: [niccolo.zampieri\@mdc-berlin.de](mailto:niccolo.zampieri@mdc-berlin.de)
+Niccolò Zampieri, Max Delbrück Center for Molecular Medicine (MDC),
+Robert-Rössle-Str. 10, 13092 Berlin, Germany:
+[niccolo.zampieri\@mdc-berlin.de](mailto:niccolo.zampieri@mdc-berlin.de)
 
-Samuel J. Pfaff, The Salk Institute for Biological Studies, Gene Expression Laboratory, 10010 North Torrey Pines Road, La Jolla CA 92037, USA: [pfaff\@salk.edu](javascript:void(window.open('/imp/dynamic.php?page=compose&to=pfaff%40salk.edu&popup=1','','width=820,height=610,status=1,scrollbars=yes,resizable=yes')))
+Samuel J. Pfaff, The Salk Institute for Biological Studies, Gene
+Expression Laboratory, 10010 North Torrey Pines Road, La Jolla CA 92037,
+USA:
+[pfaff\@salk.edu](javascript:void(window.open('/imp/dynamic.php?page=compose&to=pfaff%40salk.edu&popup=1','','width=820,height=610,status=1,scrollbars=yes,resizable=yes')))
 
-Robert M. Brownstone, Department of Neuromuscular Diseases, UCL Queen Square Institute of Neurology, University College London, London WC1N 3BG, UK: [r.brownstone\@ucl.ac.uk](mailto:r.brownstone@ucl.ac.uk)
+Robert M. Brownstone, Department of Neuromuscular Diseases, UCL Queen
+Square Institute of Neurology, University College London, London WC1N
+3BG, UK: [r.brownstone\@ucl.ac.uk](mailto:r.brownstone@ucl.ac.uk)
 
-Marco Beato, Department of Neuroscience Physiology and Pharmacology (NPP), Gower Street, University College London, WC1E 6BT, UK: m.beato\@ucl.ac.uk
+Marco Beato, Department of Neuroscience Physiology and Pharmacology
+(NPP), Gower Street, University College London, WC1E 6BT, UK:
+[m.beato\@ucl.ac.uk](mailto:m.beato@ucl.ac.uk)
 
-**Key words:** spinal cord, premotor interneurons, flexor muscles, extensor muscles, rabies, viral tracing
+**Key words:** spinal cord, premotor interneurons, flexor muscles,
+extensor muscles, rabies, viral tracing
 
-# **Abstract**
+# Abstract
 
-Elaborate behaviours are produced by tightly controlled flexor-extensor motor neuron activation patterns. Motor neurons are regulated by a network of interneurons within the spinal cord, but the computational processes involved in motor control are not fully understood. The neuroanatomical arrangement of motor and premotor neurons into topographic patterns related to their controlled muscles is thought to facilitate how information is processed by spinal circuits. Rabies retrograde monosynaptic tracing has been used to label premotor interneurons innervating specific motor neuron pools, with previous studies reporting topographic mediolateral positional biases in flexor and extensor premotor interneurons. To more precisely define how premotor interneurons contacting specific motor pools are organized we used multiple complementary viral-tracing approaches to minimize systematic biases associated with each method. Contrary to expectations, we found that premotor interneurons contacting motor pools controlling flexion and extension of the ankle are highly intermingled rather than segregated into specific domains like motor neurons. Thus, premotor spinal neurons controlling different muscles process motor instructions in the absence of clear spatial patterns among the flexor-extensor circuit components.
+Elaborate behaviours are produced by tightly controlled flexor-extensor
+motor neuron activation patterns. Motor neurons are regulated by a
+network of interneurons within the spinal cord, but the computational
+processes involved in motor control are not fully understood. The
+neuroanatomical arrangement of motor and premotor neurons into
+topographic patterns related to their controlled muscles is thought to
+facilitate how information is processed by spinal circuits. Rabies
+retrograde monosynaptic tracing has been used to label premotor
+interneurons innervating specific motor neuron pools, with previous
+studies reporting topographic mediolateral positional biases in flexor
+and extensor premotor interneurons. To more precisely define how
+premotor interneurons contacting specific motor pools are organized we
+used multiple complementary viral-tracing approaches to minimize
+systematic biases associated with each method. Contrary to expectations,
+we found that premotor interneurons contacting motor pools controlling
+flexion and extension of the ankle are highly intermingled rather than
+segregated into specific domains like motor neurons. Thus, premotor
+spinal neurons controlling different muscles process motor instructions
+in the absence of clear spatial patterns among the flexor-extensor
+circuit components.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -280,7 +316,16 @@ cowplot::plot_grid(Figure_2Ci, NULL, Figure_2Cii, NULL, Figure_2Ciii, ncol=5, nr
 #NULL are to adapt the space between plots. 
 ```
 
-**Figure 2**: Double injections of flexor and extensor muscles shows no segregation of premotor interneurons. C: Projections along the transverse (left), sagittal (middle) and coronal (right) axes throughout the lumbar region of the sample showed in A and B (170427n2, UCL). Dots denote individual premotor interneurons, triangles denote infected motor neurons. Convolved density along each axe are shown to the sides of the raw data (top-bottom and left-right distributions in all panels sum to 1). For each section the data are scaled to the reference points indicated in the methods in order to account for size differences along the segments.
+**Figure 2**: Double injections of flexor and extensor muscles shows no
+segregation of premotor interneurons. C: Projections along the
+transverse (left), sagittal (middle) and coronal (right) axes throughout
+the lumbar region of the sample showed in A and B (170427n2, UCL). Dots
+denote individual premotor interneurons, triangles denote infected motor
+neurons. Convolved density along each axe are shown to the sides of the
+raw data (top-bottom and left-right distributions in all panels sum to
+1). For each section the data are scaled to the reference points
+indicated in the methods in order to account for size differences along
+the segments.
 
 # Figure 3
 
@@ -336,7 +381,20 @@ cowplot::plot_grid(Figure_3A, Figure_3B, Figure_3C, Figure_3D, ncol=2,nrow = 2, 
 
 ```
 
-**Figure 3**: Consistent distribution of flexor and extensor premotor interneurons across all individual experiments. A, B: Distribution of premotor interneurons of LG (A) and TA (B) for all the injections. Distributions for each individual experiment are represented with different shades of blue and orange. C: All experiments (single or double ΔG-RabV injections) pooled, showing an overlap of the flexor and extensor related distribution in all quadrants of the spinal cord, with individual dots replaced by contours. For each section the data are scaled to the reference points indicated in the methods in order to account for size differences along the segments. D: Correlation (top right) and absolute value of Hedges' G coefficient (bottom left) across all pairs of experiments, indicating a high degree of consistency and small effect sizes across all experiments, independent of the muscle injected.
+**Figure 3**: Consistent distribution of flexor and extensor premotor
+interneurons across all individual experiments. A, B: Distribution of
+premotor interneurons of LG (A) and TA (B) for all the injections.
+Distributions for each individual experiment are represented with
+different shades of blue and orange. C: All experiments (single or
+double ΔG-RabV injections) pooled, showing an overlap of the flexor and
+extensor related distribution in all quadrants of the spinal cord, with
+individual dots replaced by contours. For each section the data are
+scaled to the reference points indicated in the methods in order to
+account for size differences along the segments. D: Correlation (top
+right) and absolute value of Hedges' G coefficient (bottom left) across
+all pairs of experiments, indicating a high degree of consistency and
+small effect sizes across all experiments, independent of the muscle
+injected.
 
 ```{r, echo=FALSE, warning=FALSE, fig.align='center', fig.width=8 ,fig.height=2}
 ## -- 3E -- ##
@@ -351,7 +409,10 @@ Fig_3EF <- Fig_3EF %>% layout(width = 900, height = 450)
 Fig_3EF
 ```
 
-Left: Box and whisker plot of the mediolateral position of dorsal ipsilateral premotor interneurons in each experiment. Right: Values of the median for each LG and TA experiment. Pooled distributions split into lumbar segments are shown in Figure 3, figure supplement 1.
+Left: Box and whisker plot of the mediolateral position of dorsal
+ipsilateral premotor interneurons in each experiment. Right: Values of
+the median for each LG and TA experiment. Pooled distributions split
+into lumbar segments are shown in Figure 3, figure supplement 1.
 
 # Figure 3 figure supplement 1
 
@@ -407,7 +468,11 @@ cowplot::plot_grid(Figure_3supp1A, Figure_3supp1B, Figure_3supp1C, Figure_3supp1
 
 ```
 
-**Figure 3 figure supplement 1**: The distribution of premotor interneurons is similar throughout the lumbar spinal cord: data pooled from 18 experiments (11 LG and 7 TA injections) show that within each lumbar segment, from L1 to L6, the distributions of LG and TA premotor interneurons are overlapping.
+**Figure 3 figure supplement 1**: The distribution of premotor
+interneurons is similar throughout the lumbar spinal cord: data pooled
+from 18 experiments (11 LG and 7 TA injections) show that within each
+lumbar segment, from L1 to L6, the distributions of LG and TA premotor
+interneurons are overlapping.
 
 # Figure 3 figure supplement 2
 
@@ -476,7 +541,11 @@ cowplot::plot_grid(Figure_3supp2A, Figure_3supp2B, Figure_3supp2C, Figure_3supp2
 
 ```
 
-**Figure 3 figure supplement 2**: Same data as in Figure 3-figure supplement 1 shown before normalization procedures, with idealized spinal cord section scaled to the average size of each segment. Using the raw coordinates, the distribution of LG and TA premotor interneurons are consistently overlapping throughout the lumbar segments.
+**Figure 3 figure supplement 2**: Same data as in Figure 3-figure
+supplement 1 shown before normalization procedures, with idealized
+spinal cord section scaled to the average size of each segment. Using
+the raw coordinates, the distribution of LG and TA premotor interneurons
+are consistently overlapping throughout the lumbar segments.
 
 # Figure 3 figure supplement 3
 
@@ -504,7 +573,10 @@ cowplot::plot_grid(Figure_3supp3, NULL, Figure_3supp3ii, NULL, Figure_3supp3iii,
                    ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
 ```
 
-**Figure 3 figure supplement 3**: distribution of flexor and extensor premotor interneurons pooled across all LG and TA injections shown in the transverse plane (left) and as front (middle) and lateral (right) view along the rostrocaudal axis.
+**Figure 3 figure supplement 3**: distribution of flexor and extensor
+premotor interneurons pooled across all LG and TA injections shown in
+the transverse plane (left) and as front (middle) and lateral (right)
+view along the rostrocaudal axis.
 
 # Figure 4
 
@@ -556,7 +628,15 @@ cowplot::plot_grid(Figure_4A, Figure_4B, Figure_4C, Figure_4D, ncol=2,nrow = 2, 
 
 ```
 
-**Figure 4**: Injection with diluted RabV do not reveal any segregation between flexor and extensor premotor interneurons. A and B show the distribution of LG and TA premotor interneurons on the transverse plane for individual experiments, represented with different colour shades. For each section the data are scaled to the reference points indicated in the methods in order to account for size differences along the segments. C: LG and TA distributions overlap and the premotor interneuron distributions are highly correlated across experiments and absolute value of Hedges' G coefficients are small (D).
+**Figure 4**: Injection with diluted RabV do not reveal any segregation
+between flexor and extensor premotor interneurons. A and B show the
+distribution of LG and TA premotor interneurons on the transverse plane
+for individual experiments, represented with different colour shades.
+For each section the data are scaled to the reference points indicated
+in the methods in order to account for size differences along the
+segments. C: LG and TA distributions overlap and the premotor
+interneuron distributions are highly correlated across experiments and
+absolute value of Hedges' G coefficients are small (D).
 
 ```{r, echo=FALSE, warning=FALSE, fig.align='center', fig.width=8 ,fig.height=2}
 
@@ -572,7 +652,9 @@ Fig_4EF_interactive <- Fig_4EF_interactive %>% layout(width = 900, height = 450)
 Fig_4EF_interactive
 ```
 
-Left: Box and whisker plot of the mediolateral position of dorsal premotor interneurons in each experiment. Right: Values of the median for each LG and TA experiment.
+Left: Box and whisker plot of the mediolateral position of dorsal
+premotor interneurons in each experiment. Right: Values of the median
+for each LG and TA experiment.
 
 # Figure 4 figure supplement 1
 
@@ -608,7 +690,10 @@ cowplot::plot_grid(Figure_4supp1i, NULL, Figure_4supp1ii, NULL, Figure_4supp1iii
 
 ```
 
-**Figure 4 figure supplement 1**: distribution of flexor and extensor premotor interneurons pooled across all LG and TA injections with diluted RabV shown in the transverse plane (left) and as front (middle) and lateral (right) view along the rostrocaudal axis.
+**Figure 4 figure supplement 1**: distribution of flexor and extensor
+premotor interneurons pooled across all LG and TA injections with
+diluted RabV shown in the transverse plane (left) and as front (middle)
+and lateral (right) view along the rostrocaudal axis.
 
 # Figure 4 figure supplement 2
 
@@ -732,7 +817,17 @@ Figure_4supp1GH_interactive <- Figure_4supp1GH_interactive %>% layout(width = 90
 Figure_4supp1GH_interactive
 ```
 
-**Figure 4 figure supplement 2**: High and low efficiency infections give rise to the same premotor interneurons distributions. Comparison of high and low titre injections are shown in A and E for LG and TA respectively. For each section the data are scaled to the reference points indicated in the methods in order to account for size differences along the segments. Correlations between high and low titre experiments are high and effect sizes are low for both LG and TA muscles (B and F) The distributions are similar across experiments for both muscles (B and E) and the median values of the distributions in the ipsilateral dorsal quadrant are not different for high and low efficiency of infection (C and F).
+**Figure 4 figure supplement 2**: High and low efficiency infections
+give rise to the same premotor interneurons distributions. Comparison of
+high and low titre injections are shown in A and E for LG and TA
+respectively. For each section the data are scaled to the reference
+points indicated in the methods in order to account for size differences
+along the segments. Correlations between high and low titre experiments
+are high and effect sizes are low for both LG and TA muscles (B and F)
+The distributions are similar across experiments for both muscles (B and
+E) and the median values of the distributions in the ipsilateral dorsal
+quadrant are not different for high and low efficiency of infection (C
+and F).
 
 # Figure 4 figure supplement 3
 
@@ -805,7 +900,11 @@ graph_fig4supp3 <- ggplot(data_fig4supp3, aes(x = log(nb_MN), y = log(nb_IN))) +
 graph_fig4supp3
 ```
 
-**Figure 4 figure supplement 3**: the relation between the number of primary infected motor neurons and premotor interneurons follow a power law. Motor neuron and interneuron numbers in each experiment are shown for high (red) and low (black) titre experiments. The fitted line represents a power law.
+**Figure 4 figure supplement 3**: the relation between the number of
+primary infected motor neurons and premotor interneurons follow a power
+law. Motor neuron and interneuron numbers in each experiment are shown
+for high (red) and low (black) titre experiments. The fitted line
+represents a power law.
 
 # Figure 5
 
@@ -852,7 +951,10 @@ Figure_5B <- Corr_HedgesG(data_all, lg, mg, method_used, titer_used, N, lim, pan
 Figure_5B
 ```
 
-**Figure 5**: Pairs of flexor or extensor muscles show similar distributions of premotor interneurons. A, comparison of pooled data from extensor muscles LG and MG injections. B: correlation and absolute value of Hedges' G coefficients across all experiments.
+**Figure 5**: Pairs of flexor or extensor muscles show similar
+distributions of premotor interneurons. A, comparison of pooled data
+from extensor muscles LG and MG injections. B: correlation and absolute
+value of Hedges' G coefficients across all experiments.
 
 ```{r, echo=FALSE, warning=FALSE, fig.align='center', fig.width=8 ,fig.height=2}
 ## -- 5C -- ##
@@ -867,7 +969,9 @@ Fig_5CD_interactive <- Fig_5CD_interactive %>% layout(width = 900, height = 450)
 Fig_5CD_interactive
 ```
 
-Left: box and whisker plots of the mediolateral position of dorsal ipsilateral premotor interneurons for each experiment and distribution of median values (right).
+Left: box and whisker plots of the mediolateral position of dorsal
+ipsilateral premotor interneurons for each experiment and distribution
+of median values (right).
 
 ```{r, echo=FALSE, warning=FALSE, fig.align='left', fig.width= 12 ,fig.height= 4}
 
@@ -905,7 +1009,10 @@ Figure_5F <- Corr_HedgesG(data_all, ta, pl, method_used, titer_used, N, lim, pan
 Figure_5F
 ```
 
-E: similar plot as A, showing the distribution of premotor interneurons following injections of the flexor muscles TA and PL. Correlations and absolute value of Hedges' G coefficients across each experiment are shown in F.
+E: similar plot as A, showing the distribution of premotor interneurons
+following injections of the flexor muscles TA and PL. Correlations and
+absolute value of Hedges' G coefficients across each experiment are
+shown in F.
 
 ```{r, echo=FALSE, warning=FALSE, fig.align='center', fig.width=8 ,fig.height=2}
 
@@ -922,7 +1029,10 @@ Fig_5GH_interactive <- Fig_5GH_interactive %>% layout(width = 900, height = 450)
 Fig_5GH_interactive
 ```
 
-Mediolateral distribution and positions of the median for each experiment, respectively. For each section the data are scaled to the reference points indicated in the methods in order to account for size differences along the segments.
+Mediolateral distribution and positions of the median for each
+experiment, respectively. For each section the data are scaled to the
+reference points indicated in the methods in order to account for size
+differences along the segments.
 
 # Figure 6
 
@@ -1150,7 +1260,29 @@ cowplot::plot_grid(Figure_6A, NULL, Figure_6B, Figure_6C,Figure_6D, NULL, Figure
                    
 ```
 
-**Figure 6**: GlyT2^on^ and GlyT2^off^ premotor interneurons are distributed similarly for TA and LG. A, B: Distribution of GlyT2^off^ (A) and GlyT2^on^ (D) premotor interneurons following LG and TA injections pooled from 4 LG and 3 TA experiments in *GlyT2-EGFP::ChAT-Cre* mice crossed with RFGT mice, indicating that neither class of premotor interneurons is segregated across muscles. Boxplots and violin plots (B for GlyT2^off^ and E for GlyT2^on^) show uniformity of distribution across experiments in both the dorsal (top) and ventral (bottom) halves of the cord. C (GlyT2^off^) and F (GlyT2^on^) show boxplots and individual values for the medians of the mediolateral distributions restricted to dorsal (top) or ventral (bottom) part of the cord. Ventral premotor GlyT2^off^ and GlyT2^on^ interneurons are differentially distributed. Comparison of excitatory and inhibitory premotor interneurons in LG (G) and TA (J) muscles are similar in the dorsal cord, but differ in the ventral cord, where most ipsilateral premotor interneurons are GlyT2^on^, and the majority of contralateral premotor interneurons are GlyT2^off^. Boxplots and violin plots of individual experiments are shown in H for LG and K for TA, highlighting the mediolateral differences in the ventral cord. The medians of the ventral and dorsal distributions are shown in I for LG and L for TA. For each section the data are scaled to the reference points indicated in the methods in order to account for size differences along the segments.
+**Figure 6**: GlyT2^on^ and GlyT2^off^ premotor interneurons are
+distributed similarly for TA and LG. A, B: Distribution of GlyT2^off^
+(A) and GlyT2^on^ (D) premotor interneurons following LG and TA
+injections pooled from 4 LG and 3 TA experiments in
+*GlyT2-EGFP::ChAT-Cre* mice crossed with RFGT mice, indicating that
+neither class of premotor interneurons is segregated across muscles.
+Boxplots and violin plots (B for GlyT2^off^ and E for GlyT2^on^) show
+uniformity of distribution across experiments in both the dorsal (top)
+and ventral (bottom) halves of the cord. C (GlyT2^off^) and F
+(GlyT2^on^) show boxplots and individual values for the medians of the
+mediolateral distributions restricted to dorsal (top) or ventral
+(bottom) part of the cord. Ventral premotor GlyT2^off^ and GlyT2^on^
+interneurons are differentially distributed. Comparison of excitatory
+and inhibitory premotor interneurons in LG (G) and TA (J) muscles are
+similar in the dorsal cord, but differ in the ventral cord, where most
+ipsilateral premotor interneurons are GlyT2^on^, and the majority of
+contralateral premotor interneurons are GlyT2^off^. Boxplots and violin
+plots of individual experiments are shown in H for LG and K for TA,
+highlighting the mediolateral differences in the ventral cord. The
+medians of the ventral and dorsal distributions are shown in I for LG
+and L for TA. For each section the data are scaled to the reference
+points indicated in the methods in order to account for size differences
+along the segments.
 
 # Figure 7
 
@@ -1220,7 +1352,14 @@ Figure_7F
 
 ```
 
-**Figure 7**: The distribution of flexor and extensor premotor INs is similar in *Olig2::Cre; RGT*. C - E: Overlay of individual GS (C) and TA (D) experiments and pooled experiments (E). For each section the data are scaled to the reference points indicated in the methods in order to account for size differences along the segments. F: Correlation coefficients and absolute value of hierarchical bootstrapped Hedges' G effect sizes between injections of different muscles and using a different driver for Cre expression.
+**Figure 7**: The distribution of flexor and extensor premotor INs is
+similar in *Olig2::Cre; RGT*. C - E: Overlay of individual GS (C) and TA
+(D) experiments and pooled experiments (E). For each section the data
+are scaled to the reference points indicated in the methods in order to
+account for size differences along the segments. F: Correlation
+coefficients and absolute value of hierarchical bootstrapped Hedges' G
+effect sizes between injections of different muscles and using a
+different driver for Cre expression.
 
 ```{r, echo=FALSE, warning=FALSE, fig.align='center', fig.width=5 ,fig.height=2}
 ## -- 7G -- ##
@@ -1241,7 +1380,8 @@ Fig_7G_interactive <- Fig_7G_interactive %>% layout(width = 500, height = 450)
 Fig_7G_interactive
 ```
 
-Box and whisker plots of median values of all the medio-lateral distributions.
+Box and whisker plots of median values of all the medio-lateral
+distributions.
 
 # Figure 7 figure supplement 1
 
@@ -1273,7 +1413,11 @@ cowplot::plot_grid(Figure_7supp1i, NULL, Figure_7supp1ii, NULL, Figure_7supp1iii
                    ncol=5,nrow = 1, align = "hv", rel_widths = c(5,-0.3, 4.3,-0.3,3.7), rel_heights = 3)
 ```
 
-**Figure 7 figure supplement 1**: distribution of flexor and extensor premotor interneurons pooled across GS and TA injections performed in *Olig2::Cre; RFGT* mice. Distributions are shown in the transverse plane (left) and as front (middle) and lateral (right) view along the rostrocaudal axis.
+**Figure 7 figure supplement 1**: distribution of flexor and extensor
+premotor interneurons pooled across GS and TA injections performed in
+*Olig2::Cre; RFGT* mice. Distributions are shown in the transverse plane
+(left) and as front (middle) and lateral (right) view along the
+rostrocaudal axis.
 
 # Figure 8
 
@@ -1321,7 +1465,12 @@ Figure_8D <- Corr_HedgesG(data_all, gs, ta, method_used, titer_used, N, lim, pan
 Figure_8D
 ```
 
-**Figure 8**: Injection of AAV-G and RabV into GS and TA muscles does not reveal segregation of premotor interneurons. (C). For each section the data are scaled to the reference points indicated in the methods in order to account for size differences along the segments. Individual experiments are highly correlated and have low absolute value of Hedges' G effect sizes (D).
+**Figure 8**: Injection of AAV-G and RabV into GS and TA muscles does
+not reveal segregation of premotor interneurons. (C). For each section
+the data are scaled to the reference points indicated in the methods in
+order to account for size differences along the segments. Individual
+experiments are highly correlated and have low absolute value of Hedges'
+G effect sizes (D).
 
 ```{r, echo=FALSE, warning=FALSE, fig.align='center', fig.width=8 ,fig.height=2}
 
@@ -1337,7 +1486,8 @@ Fig_8EF_interactive
 
 ```
 
-Box and whisker plots of median values of all the medio-lateral distributions.
+Box and whisker plots of median values of all the medio-lateral
+distributions.
 
 # Figure 9
 
@@ -1386,7 +1536,14 @@ Figure_9D
 
 ```
 
-**Figure 9**: Injection of AAV-FLEX-G in ChAT::Cre mice gives rise to overlapping distributions of flexor and extensor related premotor interneurons. The pooled distributions of flexor and extensor related infected neurons are similar on the transverse and longitudinal planes (C). For each section the data are scaled to the reference points indicated in the methods in order to account for size differences along the segments. There is strong correlation and low effect sizes across individual experiments (D).
+**Figure 9**: Injection of AAV-FLEX-G in ChAT::Cre mice gives rise to
+overlapping distributions of flexor and extensor related premotor
+interneurons. The pooled distributions of flexor and extensor related
+infected neurons are similar on the transverse and longitudinal planes
+(C). For each section the data are scaled to the reference points
+indicated in the methods in order to account for size differences along
+the segments. There is strong correlation and low effect sizes across
+individual experiments (D).
 
 ```{r, echo=FALSE, warning=FALSE, fig.align='center', fig.width=8 ,fig.height=2}
 ## -- 9E -- ##
@@ -1400,7 +1557,8 @@ Fig_9EF_interactive <- Fig_9EF_interactive %>% layout(width = 900, height = 450)
 Fig_9EF_interactive
 ```
 
-Box and whisker plots of median values of all the medio-lateral distributions with identical values for flexor and extensor injections.
+Box and whisker plots of median values of all the medio-lateral
+distributions with identical values for flexor and extensor injections.
 
 # Figure 10
 
@@ -1429,7 +1587,7 @@ Figure_10Aii <- complete_graph_xy_density(spinal, density, concatenate, data_all
                                           0, IN, N_A, Size, TA, N_A, kernel, bin, method_used, titer_used, panel)
 
 
-Legend_fig <- cowplot::ggdraw() + cowplot::draw_image("~/Desktop/last_version_segregation/Analysis/data/Legend_Fig10A.png", scale = 1)
+Legend_fig <- cowplot::ggdraw() + cowplot::draw_image(str_c(maindir, "", "/data/Legend_Fig10A.png"), scale = 1)
 Figure_10A <- cowplot::plot_grid(Figure_10Ai,NULL, Figure_10Aii, ncol=3,nrow = 1, align = "hv", rel_widths = c(4,2,4), rel_heights = 3)
 cowplot::plot_grid(Legend_fig, Figure_10A, ncol=1,nrow = 2, align = "hv", rel_widths = c(10), rel_heights = c(2,4))
 
@@ -1461,7 +1619,17 @@ Figure_10B <- Corr_HedgesG_methods(df_corr_Hedges, panel, color1, color2, 2, 2, 
 Figure_10B
 ```
 
-**Figure 10**: Injection of AAV-FLEX-G prevents anterograde spreading of RabV from afferent terminals. A: side by side comparison of pooled transverse distribution of infected interneurons from GS (left) and TA (right) with AAV-G or AAV-FLEX-G and RabV. The distributions obtained with AAV-G show a marked mediolateral shift and extensive labelling of superficial dorsal horn neurons, a feature that is absent when anterograde transfer is prevented by restricting the expression of the G protein to motor neurons only. The distributions obtained are very similar across the different muscles, but the mediolateral shift is reflected in the lower correlation values and high hierarchical bootstrapped effect size (B) between AAV-G and AAV-FLEX-G injections.
+**Figure 10**: Injection of AAV-FLEX-G prevents anterograde spreading of
+RabV from afferent terminals. A: side by side comparison of pooled
+transverse distribution of infected interneurons from GS (left) and TA
+(right) with AAV-G or AAV-FLEX-G and RabV. The distributions obtained
+with AAV-G show a marked mediolateral shift and extensive labelling of
+superficial dorsal horn neurons, a feature that is absent when
+anterograde transfer is prevented by restricting the expression of the G
+protein to motor neurons only. The distributions obtained are very
+similar across the different muscles, but the mediolateral shift is
+reflected in the lower correlation values and high hierarchical
+bootstrapped effect size (B) between AAV-G and AAV-FLEX-G injections.
 
 ```{r, echo=FALSE, warning=FALSE, fig.align='center', fig.width=5 ,fig.height=12}
 
@@ -1487,7 +1655,8 @@ Fig_10C_interactive
 
 .
 
-Medians evidence the mediolateral shift obtained the different methods, AAV-G and AAV-FLEX-G injections.
+Medians evidence the mediolateral shift obtained the different methods,
+AAV-G and AAV-FLEX-G injections.
 
 # Figure 11
 
@@ -1534,7 +1703,12 @@ Figure_11D <- Corr_HedgesG(data_all, gs, ta, method_used, titer_used, N, lim, pa
 Figure_11D
 ```
 
-**Figure 11**: Injections of PRV-Bartha in GS and TA muscles give rise to similar distribution of premotor interneurons. The distributioof premotor interneurons are similar along all axis (C). For each section the data are scaled to the reference points indicated in the methods in order to account for size differences along the segments. Individual experiments are highly correlated, with small effect size (D).
+**Figure 11**: Injections of PRV-Bartha in GS and TA muscles give rise
+to similar distribution of premotor interneurons. The distributioof
+premotor interneurons are similar along all axis (C). For each section
+the data are scaled to the reference points indicated in the methods in
+order to account for size differences along the segments. Individual
+experiments are highly correlated, with small effect size (D).
 
 ```{r, echo=FALSE, warning=FALSE, fig.align='center', fig.width=8 ,fig.height=2}
 ## -- 11E -- ##
@@ -1549,7 +1723,8 @@ Fig_11EF_interactive <- Fig_11EF_interactive %>% layout(width = 900, height = 45
 Fig_11EF_interactive
 ```
 
-Box and whisker plots of median values of all the medio-lateral distributions with identical values for flexor and extensor injections.
+Box and whisker plots of median values of all the medio-lateral
+distributions with identical values for flexor and extensor injections.
 
 # Figure 12
 
@@ -1617,7 +1792,14 @@ Figure_12B_interactive
 
 .
 
-**Figure 12**: Regardless of the tracing methods, flexor and extensor related premotor interneurons distributions are always overlapping. The correlation and absolute value of hierarchical bootstrapped Hedges' G coefficient matrix across pooled experiments obtained with different injection strategies exhibits high values of correlation  and low effect sizes across different techniques and across the two different muscles (A). The median values of the mediolateral position of premotor interneurons are similar for all conditions (B).
+**Figure 12**: Regardless of the tracing methods, flexor and extensor
+related premotor interneurons distributions are always overlapping. The
+correlation and absolute value of hierarchical bootstrapped Hedges' G
+coefficient matrix across pooled experiments obtained with different
+injection strategies exhibits high values of correlation  and low effect
+sizes across different techniques and across the two different muscles
+(A). The median values of the mediolateral position of premotor
+interneurons are similar for all conditions (B).
 
 # Figure 12 figure supplement 1
 
@@ -1677,7 +1859,10 @@ Fig_170503n6_n_rmb <- cowplot::plot_grid(plot_xy_170503n6_n_rmb, NULL, plot_xz_1
 plot_grid( title, Fig_170503n6_n_rmb,ncol = 1, rel_heights = c(0.1, 1))
 ```
 
-**Figure 12 figure supplement 1**: Distribution of motor neurons (triangles) and premotor interneurons (dots) of 3 LG (blue) and TA (yellow) double injections (UCL) of rabies virus in *ChAT::Cre+/-; RFGT+/-* mice.
+**Figure 12 figure supplement 1**: Distribution of motor neurons
+(triangles) and premotor interneurons (dots) of 3 LG (blue) and TA
+(yellow) double injections (UCL) of rabies virus in *ChAT::Cre+/-;
+RFGT+/-* mice.
 
 # Figure 12 figure supplement 2
 
@@ -1709,7 +1894,10 @@ Fig_1578_n_djm <- cowplot::plot_grid(plot_xy_1578_n_djm, NULL, plot_xz_1578_n_dj
 plot_grid(title, Fig_1578_n_djm,ncol = 1, rel_heights = c(0.1, 1))
 ```
 
-**Figure 12 figure supplement 2** Distribution of motor neurons (triangles) and premotor interneurons (dots) of 2 LG (blue) and TA (yellow) double injections (UoG) of rabies virus in *ChAT::Cre+/-; RFGT+/-* mice.
+**Figure 12 figure supplement 2** Distribution of motor neurons
+(triangles) and premotor interneurons (dots) of 2 LG (blue) and TA
+(yellow) double injections (UoG) of rabies virus in *ChAT::Cre+/-;
+RFGT+/-* mice.
 
 # Figure 12 figure supplement 3
 
@@ -1737,7 +1925,10 @@ Fig_170508n7_n_rmb <- cowplot::plot_grid(plot_xy_170508n7_n_rmb, NULL, plot_xz_1
 plot_grid(title, Fig_170508n7_n_rmb,ncol = 1, rel_heights = c(0.1, 1))
 ```
 
-**Figure 12 figure supplement 3** Distribution of motor neurons (triangles) and premotor interneurons (dots) of 2 LG (blue) and MG (dark blue) double injections (UCL) of rabies virus in *ChAT::Cre+/-; RFGT+/-* mice.
+**Figure 12 figure supplement 3** Distribution of motor neurons
+(triangles) and premotor interneurons (dots) of 2 LG (blue) and MG (dark
+blue) double injections (UCL) of rabies virus in *ChAT::Cre+/-; RFGT+/-*
+mice.
 
 # Figure 12 figure supplement 4
 
@@ -1791,7 +1982,10 @@ Fig_1702_n_djm <- cowplot::plot_grid(plot_xy_1702_n_djm, NULL, plot_xz_1702_n_dj
 plot_grid(title, Fig_1702_n_djm,ncol = 1, rel_heights = c(0.1, 1))
 ```
 
-**Figure 12 figure supplement 4** Distribution of motor neurons (triangles) and premotor interneurons (dots) of 4 LG (blue) and MG (yellow) double injections (UoG) of rabies virus in *ChAT::Cre+/-; RFGT+/-* mice.
+**Figure 12 figure supplement 4** Distribution of motor neurons
+(triangles) and premotor interneurons (dots) of 4 LG (blue) and MG
+(yellow) double injections (UoG) of rabies virus in *ChAT::Cre+/-;
+RFGT+/-* mice.
 
 # Figure 12 figure supplement 5
 
@@ -1818,7 +2012,10 @@ Fig_170125n8_n_rmb <- cowplot::plot_grid(plot_xy_170125n8_n_rmb, NULL, plot_xz_1
 plot_grid(title, Fig_170125n8_n_rmb,ncol = 1, rel_heights = c(0.1, 1))
 ```
 
-**Figure 12 figure supplement 5** Distribution of motor neurons (triangles) and premotor interneurons (dots) of 2 TA (yellow) and PL (dark orange) double injections (UCL) of rabies virus in *ChAT::Cre+/-; RFGT+/-* mice.
+**Figure 12 figure supplement 5** Distribution of motor neurons
+(triangles) and premotor interneurons (dots) of 2 TA (yellow) and PL
+(dark orange) double injections (UCL) of rabies virus in *ChAT::Cre+/-;
+RFGT+/-* mice.
 
 # Figure 12 figure supplement 6
 
@@ -1874,7 +2071,9 @@ Fig_1662_n_djm <- cowplot::plot_grid(plot_xy_1662_n_djm, NULL, plot_xz_1662_n_dj
 plot_grid(title, Fig_1662_n_djm,ncol = 1, rel_heights = c(0.1, 1))
 ```
 
-**Figure 12 figure supplement 6** Distribution of motor neurons (triangles) and premotor interneurons (dots) of 4 MG (dark blue) single injections (UoG) of rabies virus in *ChAT::Cre+/-; RFGT+/-* mice.
+**Figure 12 figure supplement 6** Distribution of motor neurons
+(triangles) and premotor interneurons (dots) of 4 MG (dark blue) single
+injections (UoG) of rabies virus in *ChAT::Cre+/-; RFGT+/-* mice.
 
 # Figure 12 figure supplement 7
 
@@ -1917,7 +2116,9 @@ Fig_1640_n_djm <- cowplot::plot_grid(plot_xy_1640_n_djm, NULL, plot_xz_1640_n_dj
 plot_grid(title, Fig_1640_n_djm,ncol = 1, rel_heights = c(0.1, 1))
 ```
 
-**Figure 12 figure supplement 7** Distribution of motor neurons (triangles) and premotor interneurons (dots) of 3 PL (dark orange) single injections (UoG) of rabies virus in *ChAT::Cre+/-; RFGT+/-* mice.
+**Figure 12 figure supplement 7** Distribution of motor neurons
+(triangles) and premotor interneurons (dots) of 3 PL (dark orange)
+single injections (UoG) of rabies virus in *ChAT::Cre+/-; RFGT+/-* mice.
 
 # Figure 12 figure supplement 8
 
@@ -1962,7 +2163,10 @@ Fig_1653_n_djm <- cowplot::plot_grid(plot_xy_1653_n_djm, NULL, plot_xz_1653_n_dj
 plot_grid(title, Fig_1653_n_djm,ncol = 1, rel_heights = c(0.1, 1))
 ```
 
-**Figure 12 figure supplement 8** Distribution of motor neurons (triangles) and premotor interneurons (dots) of 3 LG (blue) and TA (yellow) double injections with low titre rabies virus in *ChAT::Cre+/-; RFGT+/-* mice (UoG).
+**Figure 12 figure supplement 8** Distribution of motor neurons
+(triangles) and premotor interneurons (dots) of 3 LG (blue) and TA
+(yellow) double injections with low titre rabies virus in *ChAT::Cre+/-;
+RFGT+/-* mice (UoG).
 
 # Figure 12 figure supplement 9
 
@@ -2018,7 +2222,10 @@ Fig_1571_n_djm <- cowplot::plot_grid(plot_xy_1571_n_djm, NULL, plot_xz_1571_n_dj
 plot_grid(title, Fig_1571_n_djm,ncol = 1, rel_heights = c(0.1, 1))
 ```
 
-**Figure 12 figure supplement 9** Distribution of motor neurons (triangles) and premotor interneurons (dots) of 4 LG (blue) single injections with low titre rabies virus in *ChAT::Cre+/-; RFGT+/-* mice (UoG).
+**Figure 12 figure supplement 9** Distribution of motor neurons
+(triangles) and premotor interneurons (dots) of 4 LG (blue) single
+injections with low titre rabies virus in *ChAT::Cre+/-; RFGT+/-* mice
+(UoG).
 
 # Figure 12 figure supplement 10
 
@@ -2061,7 +2268,10 @@ Fig_1639_n_djm <- cowplot::plot_grid(plot_xy_1639_n_djm, NULL, plot_xz_1639_n_dj
 plot_grid(title, Fig_1639_n_djm,ncol = 1, rel_heights = c(0.1, 1))
 ```
 
-**Figure 12 figure supplement 10** Distribution of motor neurons (triangles) and premotor interneurons (dots) of 3 TA (yellow) single injections with low titre rabies virus in *ChAT::Cre+/-; RFGT+/-* mice (UoG).
+**Figure 12 figure supplement 10** Distribution of motor neurons
+(triangles) and premotor interneurons (dots) of 3 TA (yellow) single
+injections with low titre rabies virus in *ChAT::Cre+/-; RFGT+/-* mice
+(UoG).
 
 # Figure 12 figure supplement 11
 
@@ -2112,7 +2322,9 @@ Fig_399_n_nz <- cowplot::plot_grid(plot_xy_399_n_nz, NULL, plot_xz_399_n_nz, NUL
 plot_grid(title, Fig_399_n_nz,ncol = 1, rel_heights = c(0.1, 1))
 ```
 
-**Figure 12 figure supplement 11** Distribution of motor neurons (triangles) and premotor interneurons (dots) of 4 GS (blue) single injections with rabies virus in *Olig2::Cre +/-; RFGT+/-* mice (MDC).
+**Figure 12 figure supplement 11** Distribution of motor neurons
+(triangles) and premotor interneurons (dots) of 4 GS (blue) single
+injections with rabies virus in *Olig2::Cre +/-; RFGT+/-* mice (MDC).
 
 # Figure 12 figure supplement 12
 
@@ -2150,7 +2362,9 @@ Fig_1324_n_nz <- cowplot::plot_grid(plot_xy_1324_n_nz, NULL, plot_xz_1324_n_nz, 
 plot_grid(title, Fig_1324_n_nz,ncol = 1, rel_heights = c(0.1, 1))
 ```
 
-**Figure 12 figure supplement 12** Distribution of motor neurons (triangles) and premotor interneurons (dots) of 3 TA (yellow) single injections with rabies virus in *Olig2::Cre+/-; RFGT+/-* mice (MDC).
+**Figure 12 figure supplement 12** Distribution of motor neurons
+(triangles) and premotor interneurons (dots) of 3 TA (yellow) single
+injections with rabies virus in *Olig2::Cre+/-; RFGT+/-* mice (MDC).
 
 # Figure 12 figure supplement 13
 
@@ -2205,7 +2419,11 @@ Fig_b_n_slp <- cowplot::plot_grid(plot_xy_b_n_slp, NULL, plot_xz_b_n_slp, NULL, 
 plot_grid(title, Fig_b_n_slp,ncol = 1, rel_heights = c(0.1, 1))
 ```
 
-**Figure 12 figure supplement 13** Distribution of infected neurons (primary infected motor neurons or secondary infected interneurons are not distinguished) of 2 GS (blue) and TA (yellow) double injections and 2 GS single injections of rabies and AAV-Ef1a-B19G in wild type mice (Salk).
+**Figure 12 figure supplement 13** Distribution of infected neurons
+(primary infected motor neurons or secondary infected interneurons are
+not distinguished) of 2 GS (blue) and TA (yellow) double injections and
+2 GS single injections of rabies and AAV-Ef1a-B19G in wild type mice
+(Salk).
 
 # Figure 12 figure supplement 14
 
@@ -2255,7 +2473,10 @@ Fig_26a_4_n_slp <- cowplot::plot_grid(plot_xy_26a_4_n_slp, NULL, plot_xz_26a_4_n
 plot_grid(title, Fig_26a_4_n_slp,ncol = 1, rel_heights = c(0.1, 1))
 ```
 
-**Figure 12 figure supplement 14** Distribution of infected neurons (primary infected motor neurons or secondary infected interneurons are not distinguished) of 4 GS (blue) single injections of rabies and AAV-CAG-Flex-oG in *Chat::Cre+/-* mice (Salk).
+**Figure 12 figure supplement 14** Distribution of infected neurons
+(primary infected motor neurons or secondary infected interneurons are
+not distinguished) of 4 GS (blue) single injections of rabies and
+AAV-CAG-Flex-oG in *Chat::Cre+/-* mice (Salk).
 
 # Figure 12 figure supplement 15
 
@@ -2293,7 +2514,10 @@ Fig_26_4_n_slp <- cowplot::plot_grid(plot_xy_26_4_n_slp, NULL, plot_xz_26_4_n_sl
 plot_grid(title, Fig_26_4_n_slp,ncol = 1, rel_heights = c(0.1, 1))
 ```
 
-**Figure 12 figure supplement 15** Distribution of infected neurons (primary infected motor neurons or secondary infected interneurons are not distinguished) of 3 TA (yellow) single injections of rabies and AAV-CAG-Flex-oG in *Chat::Cre+/-* mice (Salk).
+**Figure 12 figure supplement 15** Distribution of infected neurons
+(primary infected motor neurons or secondary infected interneurons are
+not distinguished) of 3 TA (yellow) single injections of rabies and
+AAV-CAG-Flex-oG in *Chat::Cre+/-* mice (Salk).
 
 # Figure 12 figure supplement 16
 
@@ -2343,7 +2567,10 @@ Fig_3_3_n_slp <- cowplot::plot_grid(plot_xy_3_3_n_slp, NULL, plot_xz_3_3_n_slp, 
 plot_grid(title, Fig_3_3_n_slp,ncol = 1, rel_heights = c(0.1, 1))
 ```
 
-**Figure 12 figure supplement 16** Distribution of infected neurons (primary infected motor neurons or secondary infected interneurons are not distinguished) of 4 GS (blue) and TA (yellow) double injections of PRV-152 and PRV-614 in wild type mice (Salk).
+**Figure 12 figure supplement 16** Distribution of infected neurons
+(primary infected motor neurons or secondary infected interneurons are
+not distinguished) of 4 GS (blue) and TA (yellow) double injections of
+PRV-152 and PRV-614 in wild type mice (Salk).
 
 # Figure 13
 
@@ -2409,4 +2636,11 @@ Figure_13C  <- ggarrange(NULL, Figure_13C, nrow = 1, widths = c(0.2, 4), labels 
 cowplot::plot_grid(Figure_13B, Figure_13C, ncol=1,nrow = 2, align = "hv", rel_widths = c(5), rel_heights = c(4,4))
 ```
 
-**Figure13**: Analysis of ectopic Cre expression in *ChAT-IRES-Cre* and *RCL-tdTom* mice. A: representative lumbar section stained with antibodies against ChAT (green) and tdTom (red) and (B) map of neurons labelled with both or one of the two antibodies in all the 13 analysed sections from 3 mice, showing that some of the tdTom positive neurons do not express ChAT, indicating either a developmental downregulation of ChAT expression or a modest leak in the Cre expression. C: Venn diagram showing the overall number of mapped neurons.
+**Figure13**: Analysis of ectopic Cre expression in *ChAT-IRES-Cre* and
+*RCL-tdTom* mice. A: representative lumbar section stained with
+antibodies against ChAT (green) and tdTom (red) and (B) map of neurons
+labelled with both or one of the two antibodies in all the 13 analysed
+sections from 3 mice, showing that some of the tdTom positive neurons do
+not express ChAT, indicating either a developmental downregulation of
+ChAT expression or a modest leak in the Cre expression. C: Venn diagram
+showing the overall number of mapped neurons.
