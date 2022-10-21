@@ -1587,7 +1587,7 @@ concatenate <- 1
 Figure_10Aii <- complete_graph_xy_density(spinal, density, concatenate, data_all, Animal, ta, N_A, color_range_flex, color_range_flex2, color_ta, color_pl, 2, 
                                           0, IN, N_A, Size, TA, N_A, kernel, bin, method_used, titer_used, panel)
 
-im1 <- readPNG("~/Desktop/last_version_segregation/Analysis/data/Legend_Fig10A.png")
+im1 <- readPNG("~/data/Legend_Fig10A.png")
 Legend_fig <- ggplot() + 
   background_image(im1) +
   theme(plot.margin = margin(t = 1, l=0.5, r=0.5, b = 0.5, unit = "cm"))
