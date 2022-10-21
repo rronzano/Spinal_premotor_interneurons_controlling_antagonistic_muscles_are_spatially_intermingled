@@ -120,6 +120,7 @@ library(forcats)
 library(plotly)
 library(tidyr)
 library(dplyr)
+#library(magick)
 library(plotlyGeoAssets)
 library(tools)
 library(stringr)
@@ -1587,7 +1588,8 @@ Figure_10Aii <- complete_graph_xy_density(spinal, density, concatenate, data_all
                                           0, IN, N_A, Size, TA, N_A, kernel, bin, method_used, titer_used, panel)
 
 
-Legend_fig <- cowplot::ggdraw() + cowplot::draw_image(str_c(maindir, "", "/data/Legend_Fig10A.png"), scale = 1)
+Legend_fig <- cowplot::ggdraw() + cowplot::draw_image("~/data/Legend_Fig10A.png", scale = 1)
+#Legend_fig <- readPNG(system.file("img", str_c(maindir, "", "/data/Legend_Fig10A.png", package="png")
 Figure_10A <- cowplot::plot_grid(Figure_10Ai,NULL, Figure_10Aii, ncol=3,nrow = 1, align = "hv", rel_widths = c(4,2,4), rel_heights = 3)
 cowplot::plot_grid(Legend_fig, Figure_10A, ncol=1,nrow = 2, align = "hv", rel_widths = c(10), rel_heights = c(2,4))
 
