@@ -884,10 +884,10 @@ graph_fig4supp3 <- ggplot(data_fig4supp3, aes(x = log10(nb_MN), y = log10(nb_IN)
   scale_color_manual(values = c("#979797", "#3B3B3B")) +
   #coord_trans(x="log10", y="log10") +
   guides(fill = guide_legend(order = 1)) + 
-  scale_y_continuous(expand = c(0.0,0.05), limits = c(6, 10), breaks=seq(from = 0, to = 10, by = 2)) +
-  scale_x_continuous(expand = c(0.0,0.05), limits = c(2, 6), breaks=seq(from = 0, to = 6, by = 2)) +
-  #stat_regline_equation(label.y = 9.5, aes(label = ..eq.label..)) + #If you want the equation of the model on the figure
-  #stat_regline_equation(label.y = 9, aes(label = ..rr.label..)) + #if you want the R^2 on the fig
+    scale_y_continuous(expand = c(0.0,0.05), limits = c(2, 4.5), breaks=seq(from = 2, to = 4.5, by = 0.5)) +
+  scale_x_continuous(expand = c(0.0,0.05), limits = c(0.8,2.5), breaks=seq(from = 1, to = 2.5, by = 0.5)) +
+  #stat_regline_equation(label.y = 4.2, aes(label = ..eq.label..)) + #If you want the equation of the model on the figure
+  #stat_regline_equation(label.y = 4, aes(label = ..rr.label..)) + #if you want the R^2 on the fig
   ylab("log(Input INs)") +  
   xlab("log(Starter MNs)") +
   theme(axis.text=element_text(size=12, colour = "black")) +
@@ -1590,7 +1590,7 @@ Figure_10Aii <- complete_graph_xy_density(spinal, density, concatenate, data_all
 im1 <- readPNG("~/Desktop/last_version_segregation/Analysis/data/Legend_Fig10A.png")
 Legend_fig <- ggplot() + 
   background_image(im1) +
-  theme(plot.margin = margin(t = 0.5, l=0, r=0, b = 0.5, unit = "cm"))
+  theme(plot.margin = margin(t = 1, l=0.5, r=0.5, b = 0.5, unit = "cm"))
 
 Figure_10A <- cowplot::plot_grid(Figure_10Ai,NULL, Figure_10Aii, ncol=3,nrow = 1, align = "hv", rel_widths = c(4,2,4), rel_heights = 3)
 
