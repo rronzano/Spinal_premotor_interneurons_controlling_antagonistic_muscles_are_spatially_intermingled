@@ -1,7 +1,7 @@
 ---
 title: "Spinal premotor interneurons controlling antagonistic muscles are spatially intermingled"
 author: ""
-date: "20/10/2022"
+date: ""
 output:
   html_document: default
   pdf_document: default
