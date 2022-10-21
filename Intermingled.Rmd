@@ -1590,7 +1590,7 @@ Figure_10Aii <- complete_graph_xy_density(spinal, density, concatenate, data_all
 im1 <- readPNG("~/data/Legend_Fig10A.png")
 Legend_fig <- ggplot() + 
   background_image(im1) +
-  theme(plot.margin = margin(t = 1, l=0.5, r=0.5, b = 0.5, unit = "cm"))
+  theme(plot.margin = margin(t = 1, l= 1, r=0.5, b = 0.5, unit = "cm"))
 
 Figure_10A <- cowplot::plot_grid(Figure_10Ai,NULL, Figure_10Aii, ncol=3,nrow = 1, align = "hv", rel_widths = c(4,2,4), rel_heights = 3)
 
