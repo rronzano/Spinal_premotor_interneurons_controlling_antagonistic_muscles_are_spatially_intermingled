@@ -1434,7 +1434,7 @@ xy_density_arrange_1d <- function(x_dorsal, y_contra, p, y_ipsi, x_ventral, pane
                          NULL,NULL, x_ventral ,NULL,NULL,
                          ncol = 5, nrow = 5,  align = "hv",
                          widths = c(1.5,-0.6,3.5,-0.6,1.5), heights = c(1.5,-0.55,3,-0.55,1.5),
-                         common.legend = TRUE, labels = as.character(panel), font.label = list(size = 28, color = "black")) 
+                         common.legend = TRUE, labels = as.character(panel), font.label = list(size = 36, color = "black")) 
   
   return(p_arrange)
 }
@@ -4751,6 +4751,18 @@ Boxplot_methods_interactive <- function(data, colors_vector, ymin, ymax) {
 }
 
 ## -- function to collect density for fig3 supp 1 -- ##
+xy_density_arrange_1d_fig3_figSupp <- function(x_dorsal, y_contra, p, y_ipsi, x_ventral, panel){
+  p_arrange <- ggarrange(NULL, NULL,x_dorsal ,NULL,NULL,
+                         NULL,NULL,NULL,NULL,NULL,
+                         y_contra,NULL,p,NULL, y_ipsi,
+                         NULL,NULL,NULL,NULL,NULL,
+                         NULL,NULL, x_ventral ,NULL,NULL,
+                         ncol = 5, nrow = 5,  align = "hv",
+                         widths = c(1.5,-0.6,3.5,-0.6,1.5), heights = c(1.5,-0.55,3,-0.55,1.5),
+                         common.legend = TRUE, labels = as.character(panel), font.label = list(size = 26, color = "black")) 
+  
+  return(p_arrange)
+}
 xy_dot_density_center_concatenate_fig3_figSupp <- function (spinal, L, m1, m2, color1, color2, kernel, Size, ymin, ymax, xmin, xmax) {
   
   M1 <-  L %>% filter(muscle == m1 & identity == IN) 
@@ -4918,7 +4930,7 @@ complete_graph_xy_density_fig3_figSupp <- function(spinal, L, m1, m2, color1, co
   ylimit <- max(ylimits)
   y_contra <- y_contra_1d_density_concatenate_fig3_figSupp(L, m1, m2, color1, color2, kernel, ymin, ymax, ylimit)
   p <- xy_dot_density_center_concatenate_fig3_figSupp(spinal, L, m1, m2, color1, color2, kernel, Size, ymin, ymax, xmin, xmax)
-  graph <- xy_density_arrange_1d(x_dorsal, y_contra, p, y_ipsi, x_ventral, panel)
+  graph <- xy_density_arrange_1d_fig3_figSupp(x_dorsal, y_contra, p, y_ipsi, x_ventral, panel)
   
   graph
 }
@@ -5085,7 +5097,7 @@ complete_graph_xy_density_fig3_figSupp2 <- function(spinal_L, L_lg, L_ta, color1
   ylimit <- max(ylimits)
   y_contra <- y_contra_1d_density_concatenate_fig3_figSupp2(L_lg, L_ta, color1, color2, kernel, ymin, ymax, ylimit)
   p <- xy_dot_density_center_concatenate_fig3_figSupp2(spinal_L, L_lg, L_ta, color1, color2, segment, kernel, LG, TA, ymin, ymax, xmin, xmax)
-  graph <- xy_density_arrange_1d(x_dorsal, y_contra, p, y_ipsi, x_ventral, panel)
+  graph <- xy_density_arrange_1d_fig3_figSupp(x_dorsal, y_contra, p, y_ipsi, x_ventral, panel)
   
   graph
 }
