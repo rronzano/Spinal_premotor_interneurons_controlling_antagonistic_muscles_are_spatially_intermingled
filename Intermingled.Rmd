@@ -56,7 +56,7 @@ library(ggvenn)
 library(ggplotify)
 library(gridExtra)
 library(boot)
-source("~/Desktop/last_version_segregation/Analysis/functions_elife_2022.R")
+source("~/functions_intermingled.R")
 
 ```
 Remi Ronzano^\*1^, Sophie Skarlatou\*^2^, Bianca K. Barriga^\*6,7^, B. Anne Bannatyne^\*3^, Gardave S. Bhumbra^\*4^, Joshua D. Foster^4^, Jeffrey D. Moore^8^, Camille Lancelin^1^, Amanda Pocratsky^1^, Mustafa Görkem Özyurt^1^, Calvin C. Smith^1^, Andrew J. Todd^3^, David J. Maxwell^3^, Andrew J. Murray^5^, Samuel L. Pfaff^6§^, Robert M. Brownstone^1§^, Niccolò Zampieri^2§^, Marco Beato^4§^
