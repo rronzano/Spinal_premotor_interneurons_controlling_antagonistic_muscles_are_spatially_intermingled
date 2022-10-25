@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning=FALSE)
 ```
 
 ```{r}
-R <- 50 # number of replica for bootstrap, R=5000 was used to generate the results in Ronzano et al. 
+R <- 100 # number of replica for bootstrap, R=5000 was used to generate the results in Ronzano et al. 
 bin <- 5 # number of contour for density plots
 
 ```
