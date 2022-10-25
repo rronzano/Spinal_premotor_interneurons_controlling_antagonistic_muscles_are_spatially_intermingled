@@ -1652,7 +1652,7 @@ complete_graph_xy_density <- function(spinal, density, concatenate, data_all, An
       p <- xy_dot_density_center(spinal, data_all, Animal, m1, m2, color_pal1, color_pal2, nb_samples_ext, nb_samples_flex, IN, MN, Size) 
     }
     if (density == 1){
-      p <- density_kernel_xy(spinal, data_all, Animal, m1, m2, color_pal1, color_pal2, nb_samples_ext, nb_samples_flex, IN, bin)
+      p <- density_kernel_xy(spinal, data_all, Animal, m1, m2, color_pal1, color_pal2, nb_samples_ext, nb_samples_flex, IN, MN, bin)
       
     } 
     x_dorsal <- x_dorsal_1d_density(data_all, Animal, m1, m2, color_pal1, color_pal2, nb_samples_ext, nb_samples_flex, color1, color2, name_M1, name_M2, kernel, xlimit)
