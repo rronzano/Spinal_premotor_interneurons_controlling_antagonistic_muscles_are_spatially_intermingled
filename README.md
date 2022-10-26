@@ -1,6 +1,7 @@
 # Spinal_premotor_interneurons_controlling_antagonistic_muscles_are_spatially_intermingled
  
-R Marckdown code and all data that allows to generate all the sections available in the print "Spinal premotor interneurons controlling antagonistic muscles are spatially intermingled" in an html format.
+R Marckdown code and all data that allow to generate all the sections available in the print "Spinal premotor interneurons controlling antagonistic muscles are spatially intermingled" in an html format.
+
 This code was built to make an executable version of the paper available, fully transparent and to provide the reader the ability to modify the figures and the analysis if they want to analyse/visualise data differently. For users of MATLAB, all the sections and figures of the paper are also available as a live script with the following link: https://github.com/marcobeato/Spinal_premotor_interneurons_controlling_antagonistic_muscles_are_spatially_intermingled  
 
 
@@ -16,7 +17,7 @@ Through the code, the variable "**kernel**" sets the kernel size of the density 
 
 Through the code, the variable "**density**" allows to trace the density estimate when sets to 1, if sets to 0 the code will generate plots with the actual distribution of premotor neurons. 
 
-Through the code, the variable "**concatenate**" allows to pool the data from the different samples used to generate the figures when sets to 1, if sets to 0 the code will generate the distributions or contour plots for each sample used to generate the figure independently.
+Through the code, the variable "**concatenate**" allows to pool the data from the different samples used to generate the figures when sets to 1, if sets to 0 the code will generate the distributions or contour plots independently for each sample used to generate the figure.
 
 All the data used for this study are stored in the folder "**data**" and are classified by groups. The non-normalised data used to generate figure 3 - figure supplement 2 are stored in the folder named "**data_raw**". 
 
