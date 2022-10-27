@@ -9,7 +9,7 @@ This code was built to make an executable version of the paper available, fully 
 **Ronzano_et_al_2022_Supp.Rmd** file contains the code to generate the html version of the supplementary figures. 
 **functions_intermingled.R** file contains all the functions used by the R markdown code to generate the figures.  
 
-The variable "**R**" (chunk 2) sets the number of replicates for bootstrap analysis. By default, R is set to 100 replicates to run the code faster. To generate the figures of the manuscript, R was set at 5000 (see methods section) and R was also set at 5000 to generate the file "Ronzano_et_al_2022.html" on this repository. 
+The variable "**R**" (chunk 2) sets the number of replicas for bootstrap analysis. By default, R is set to 100 replicas to run the code faster. To generate the figures of the manuscript, R was set at 5000 (see methods section) and R was also set at 5000 to generate the file "Ronzano_et_al_2022.html" on this repository. 
  
 The variable "**bin**" (chunk 2) sets the number of contour for the density plots
  
