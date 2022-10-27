@@ -19,7 +19,7 @@ Through the code, the variable "**density**" allows to trace the density estimat
 
 Through the code, the variable "**concatenate**" allows to pool the data from the different samples used to generate the figures when sets to 1, if sets to 0 the code will generate the distributions or contour plots independently for each sample used to generate the figure.
 
-All the data used for this study are stored in the folder "**data**" and are classified by groups. The non-normalised data used to generate figure 3 - figure supplement 2 are stored in the folder named "**data_raw**". 
+All the data used for this study are stored in the folder "**data**" and are classified by groups with folder names coding muscle, virus titer, neuron phenotype, and method of transynaptic tracing. The non-normalised data used to generate figure 3 - figure supplement 2 are stored in the folder named "**data_raw**". 
 
 The folder "**figures**" contains all the images used to generate the figures. 
 
