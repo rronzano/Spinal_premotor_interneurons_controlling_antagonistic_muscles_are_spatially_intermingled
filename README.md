@@ -2,7 +2,7 @@
  
 R Marckdown code and all data that allow to generate all the sections available in the print "Spinal premotor interneurons controlling antagonistic muscles are spatially intermingled" in an html format.
 
-This code was built to make an executable version of the paper available, fully transparent and to provide the reader the ability to modify the figures and the analysis if they want to analyse/visualise data differently. For users of MATLAB, all the sections and figures of the paper are also available as a live script with the following link: https://github.com/marcobeato/Spinal_premotor_interneurons_controlling_antagonistic_muscles_are_spatially_intermingled  
+This code was built to make an executable version of the paper available, fully transparent and to provide the readers the ability to modify the figures and the analysis if they want to analyse/visualise data differently. For MATLAB users, all the sections and figures of the paper are also available as an interactive live script with the following link: https://github.com/marcobeato/Spinal_premotor_interneurons_controlling_antagonistic_muscles_are_spatially_intermingled  
 
 
 **Ronzano_et_al_2022.Rmd** file contains the code to generate the html version of the manuscript with the main figures. 
